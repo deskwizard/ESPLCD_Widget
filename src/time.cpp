@@ -1,5 +1,5 @@
-#include "defines.h"
 #include "time.h"
+#include "defines.h"
 
 uint8_t timeHours = 6;
 uint8_t timeMinutes = 45;
@@ -8,9 +8,11 @@ extern bool NTPState;
 time_t updateTime();
 
 // US Eastern Time Zone (New York, Detroit, Toronto, Montreal, etc...)
-TimeChangeRule myDST = {"EDT", Second, Sun, Mar, 2, -240};    // Daylight time = UTC - 4 hours
-TimeChangeRule mySTD = {"EST", First, Sun, Nov, 2, -300};     // Standard time = UTC - 5 hours
-TimeChangeRule *tcr;        // Pointer to the time change rule, use to get TZ abbrev
+TimeChangeRule myDST = {"EDT", Second, Sun,
+                        Mar,   2,      -240}; // Daylight time = UTC - 4 hours
+TimeChangeRule mySTD = {"EST", First, Sun,
+                        Nov,   2,     -300}; // Standard time = UTC - 5 hours
+TimeChangeRule *tcr; // Pointer to the time change rule, use to get TZ abbrev
 Timezone myTZ(myDST, mySTD);
 
 // debugging
@@ -26,9 +28,7 @@ void setupTime() {
 
   Serial.print("DST?: ");
   Serial.println(myTZ.locIsDST(now()));
-
 }
-
 
 time_t updateTime() {
 
@@ -41,32 +41,31 @@ time_t updateTime() {
     return 0;
   }
 
-
-  if (rtcTime <= DEFAULT_TIME) {    // TODO: Add < bad time (2106 something like that) too.
+  if (rtcTime <=
+      DEFAULT_TIME) { // TODO: Add < bad time (2106 something like that) too.
     Serial.println("RTC time is invalid.");
     return 0;
-  }
-  else {
+  } else {
     Serial.println("RTC time is Valid, time updated.");
     return rtcTime + 1;
   }
-
 }
 
-
-//Print an integer in "00" format (with leading zero).
-//Input value assumed to be between 0 and 99.
+// Print an integer in "00" format (with leading zero).
+// Input value assumed to be between 0 and 99.
 void sPrintI00(int val) {
-  if (val < 10) Serial.print('0');
+  if (val < 10)
+    Serial.print('0');
   Serial.print(val, DEC);
   return;
 }
 
-//Print an integer in ":00" format (with leading zero).
-//Input value assumed to be between 0 and 99.
+// Print an integer in ":00" format (with leading zero).
+// Input value assumed to be between 0 and 99.
 void sPrintDigits(int val) {
   Serial.print(':');
-  if (val < 10) Serial.print('0');
+  if (val < 10)
+    Serial.print('0');
   Serial.print(val, DEC);
 }
 
@@ -88,7 +87,7 @@ void printTime(time_t t) {
 void printDigits(int digits) {
 
   // utility for digital clock display: prints preceding colon and leading 0
-  Serial.print(":");
+
   if (digits < 10)
     Serial.print('0');
   Serial.print(digits);
@@ -100,19 +99,15 @@ void serialClockDisplay() {
 
   // digital clock display of the time
   Serial.print(hour(local));
+  Serial.print(":");
   printDigits(minute(local));
+  Serial.print(":");
   printDigits(second(local));
   Serial.print(" ");
-  Serial.print(day(local));
-  Serial.print(".");
+  printDigits(day(local));
+  Serial.print("/");
   printDigits(month(local));
-  Serial.print(".");
+  Serial.print("/");
   Serial.print(year(local));
   Serial.println();
 }
-
-
-
-
-
-

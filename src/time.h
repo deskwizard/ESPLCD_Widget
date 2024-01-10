@@ -8,7 +8,7 @@
 #define MINUTES_TO_MS 60000L
 
 #define DEFAULT_TIME  1357041600 // Jan 1 2013
-#define RTC_UPDATE_INTERVAL 55 // in seconds
+#define RTC_UPDATE_INTERVAL 14 *  MINUTES_TO_MS// in seconds
 
 void setupTime();
 void handleNTP();

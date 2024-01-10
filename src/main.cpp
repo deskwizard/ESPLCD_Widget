@@ -1,12 +1,10 @@
-
+#include "display.h"
 #include "defines.h"
 #include "network.h"
 #include <Wire.h>
 
 // On Linux, you can use "date +T%s\n > /dev/ttyUSB0" (for example) for UTC time
-// zone fake in the past date: T1407788400\n (PM) @ 4:20 fake in the past date:
-// T1407745200\n (AM) @ 4:20 before midnight: T1628683170\n before midnight:
-// T1628639970\n before noon:     T1628679570\n
+// zone 
 
 #define LED_DEBUG 5
 
@@ -29,6 +27,8 @@ void loop() {
 
   handleWiFi();
   handleNTP();
+
+  handleDisplay();
 
   blink();
   handleSerial();

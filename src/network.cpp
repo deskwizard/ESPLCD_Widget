@@ -9,7 +9,7 @@ void sendNTPpacket(IPAddress &address);
 void WiFiGotIP(WiFiEvent_t event, WiFiEventInfo_t info);
 void WiFiConnected(WiFiEvent_t event, WiFiEventInfo_t info);
 void WiFiDisconnected(WiFiEvent_t event, WiFiEventInfo_t info);
-void WiFiEvent(WiFiEvent_t event);
+void WiFiEvent(WiFiEvent_t event); // Debug and now not working probably
 
 // choose one of them
 #define NTP_LOCAL_DISC
@@ -334,7 +334,7 @@ void sendNTPpacket(IPAddress &address) {
 }
 
 // Debug
-/*
+
 void WiFiEvent(WiFiEvent_t event) {
 
   // debug
@@ -382,7 +382,7 @@ void WiFiEvent(WiFiEvent_t event) {
     break;
   }
 }
-*/
+
 void findLocalNTP() {
 
   Serial.println();
