@@ -1,5 +1,6 @@
 
 #include "defines.h"
+#include "network.h"
 #include <Wire.h>
 
 // On Linux, you can use "date +T%s\n > /dev/ttyUSB0" (for example) for UTC time
@@ -21,10 +22,14 @@ void setup() {
   Serial.println("\nHellord");
 
   setupTime();
+  setupWiFi();
 }
 
 void loop() {
-  //
+
+  handleWiFi();
+  handleNTP();
+
   blink();
   handleSerial();
 }

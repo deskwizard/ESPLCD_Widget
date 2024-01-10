@@ -1,5 +1,5 @@
-#ifndef TIME_H
-#define TIME_H
+#ifndef _TIME_H_
+#define _TIME_H_
 
 #include <TimeLib.h>    // https://www.pjrc.com/teensy/td_libs_Time.html
 #include <Timezone.h>   // https://github.com/JChristensen/Timezone
@@ -11,6 +11,7 @@
 #define RTC_UPDATE_INTERVAL 55 // in seconds
 
 void setupTime();
+void handleNTP();
 void serialClockDisplay();
 
 #endif
