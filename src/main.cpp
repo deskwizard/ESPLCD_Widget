@@ -1,10 +1,10 @@
-#include "display.h"
 #include "defines.h"
+#include "display.h"
 #include "network.h"
 #include <Wire.h>
 
 // On Linux, you can use "date +T%s\n > /dev/ttyUSB0" (for example) for UTC time
-// zone 
+// zone
 
 #define LED_DEBUG 5
 
@@ -24,6 +24,23 @@ void setup() {
 }
 
 void loop() {
+
+  static uint8_t previousSecond = 0;
+  if (timeStatus() != timeNotSet) {
+    if (second() != previousSecond) {
+
+      if (second() == 0) {
+        Serial.println("minute++");
+
+        if (minute() == 0) {
+          Serial.println("hour++");
+        }
+      }
+
+      previousSecond = second();
+      //serialClockDisplay();
+    }
+  }
 
   handleWiFi();
   handleNTP();

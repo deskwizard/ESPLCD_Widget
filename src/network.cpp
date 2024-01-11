@@ -1,5 +1,7 @@
 #include "network.h"
+#include "ArduinoJson.h"
 #include "credentials.h"
+#include "datasources.h"
 #include "defines.h"
 #include <WiFi.h>
 
@@ -42,7 +44,7 @@ uint8_t
     packetBuffer[NTP_PACKET_SIZE]; // Buffer to hold incoming & outgoing packets
 uint16_t localPort = 8888;         // Local port to listen for UDP packets
 uint32_t NtpRetryMillis = 0;
-const uint32_t NtpUpdateDefaultDelay = MINUTES_TO_MS * 20;
+const uint32_t NtpUpdateDefaultDelay = MINUTES_TO_MS * 5;
 const uint32_t NtpUpdateShortDelay = MINUTES_TO_MS * 5;
 uint32_t NtpUpdateDelay = NtpUpdateDefaultDelay;
 
@@ -88,16 +90,18 @@ void setupWiFi() {
   // Register WiFi any event callback function
   WiFi.onEvent(WiFiEvent);
 
+  WiFi.onEvent(WiFiGotIP,
+               WiFiEvent_t::ARDUINO_EVENT_WIFI_STA_GOT_IP); // Register GOT_IP
+                                                            // event function
   WiFi.onEvent(
-      WiFiGotIP,
-      WiFiEvent_t::ARDUINO_EVENT_WIFI_STA_GOT_IP); // Register GOT_IP event function
-  WiFi.onEvent(WiFiConnected,
-               WiFiEvent_t::ARDUINO_EVENT_WIFI_STA_CONNECTED); // Register CONNECTED
-                                                         // event function
+      WiFiConnected,
+      WiFiEvent_t::ARDUINO_EVENT_WIFI_STA_CONNECTED); // Register CONNECTED
+                                                      // event function
   WiFi.onEvent(
       WiFiDisconnected,
-      WiFiEvent_t::ARDUINO_EVENT_WIFI_STA_DISCONNECTED); // Register DISCONNECTED
-                                                   // event function
+      WiFiEvent_t::ARDUINO_EVENT_WIFI_STA_DISCONNECTED); // Register
+                                                         // DISCONNECTED event
+                                                         // function
 
   connectWiFi();
 }
@@ -196,10 +200,14 @@ void handleNTP() {
   if ((uint32_t)(currentMillis - NtpRetryMillis) >= NtpUpdateDelay) {
     Serial.println();
     Serial.print("--- NTP  --- ");
-    Serial.println("NTP Update Timeout");
+    Serial.println("NTP Update Timeout at ");
+    serialClockDisplay();
+    Serial.println();
 
-    if (WiFi.status() == WL_CONNECTED) {
+    if (WiFi.status() ==
+        WL_CONNECTED) { //////////////////////////////////////////////////////////////////////////////
       getNtpTime();
+      updateDataSources();
     } else {
       Serial.println("---- WiFi disconnected, attempting connection...");
       connectWiFi();
@@ -273,8 +281,8 @@ void getNtpTime() {
     if (size >= NTP_PACKET_SIZE) {
 
       Serial.println();
-      Serial.print("--- NTP  --- ");
-      Serial.println("Receive NTP Response, Setting Time.");
+      Serial.println("--- NTP  --- ");
+      Serial.println("Received NTP Response, Setting Time.");
 
       Udp.read(packetBuffer, NTP_PACKET_SIZE); // read packet into the buffer
       uint32_t secsSince1900;
