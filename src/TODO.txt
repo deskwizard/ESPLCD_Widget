@@ -1,0 +1,16 @@
+- Weather
+    - Fetch
+    - Icons
+        - Temperature max
+        - Temperature min
+        - Temperature current
+
+- Display brightness
+    - hardware
+    - software
+
+- Touch zones
+    - Extra Info Moon
+    - Extra Info Weather
+    - Calendar
+

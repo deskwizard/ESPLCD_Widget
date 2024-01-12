@@ -153,7 +153,6 @@ void WiFiGotIP(WiFiEvent_t event, WiFiEventInfo_t info) {
 
   getNtpTime();
 
-  // updateDataSources();
 } // got ip
 
 void WiFiConnected(WiFiEvent_t event, WiFiEventInfo_t info) {
@@ -317,7 +316,7 @@ void getNtpTime() {
   Serial.println();
   NTPState = false;
   NtpUpdateDelay = NtpUpdateShortDelay;
-  disconnectWiFi();
+  // disconnectWiFi();
 }
 
 // Sends an NTP request to the time server at the given IP address
