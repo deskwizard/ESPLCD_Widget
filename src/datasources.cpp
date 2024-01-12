@@ -4,6 +4,7 @@
 #include <ArduinoJson.h>
 #include <HTTPClient.h>
 #include <WiFiClientSecure.h>
+#include "display.h"
 
 char fetchURL[55];
 uint32_t unixTime = 1904249932;
@@ -14,10 +15,15 @@ HTTPClient http;
 JsonDocument moonInfo; // Allocate the JSON document
 
 uint8_t moonFetchSuccess; // 0 = no errors
-uint8_t moonImageIndex;
+uint8_t moonImageIndex = 12;
 float moonAge;
 char moonPhase[40];
 char moonName[40];
+
+void handleDataSources() {
+
+
+}
 
 void updateDataSources() {
 
@@ -56,6 +62,7 @@ void updateDataSources() {
     Serial.println(moonName);
     Serial.println(moonImageIndex);
     Serial.println(moonAge, 8);
+    updateMoonDisplay();
   } else {
     Serial.print("Moon data fetch error: ");
     Serial.println(moonFetchSuccess);

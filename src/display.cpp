@@ -35,7 +35,8 @@ PNG png; // PNG decoder inatance
 void pngDraw(PNGDRAW *pDraw);
 /**********************************************************************************/
 
-uint8_t moonIndex = 8;
+// uint8_t moonIndex = 8;
+extern uint8_t moonImageIndex;
 
 const uint8_t moonMap[29] = {'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j',
                              'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't',
@@ -106,26 +107,24 @@ void handleDisplay() {
   }
 }
 
-
-
 void updateMoonDisplay() {
-  //Serial.println("updateMoonDisplay() called.");
-  // Serial.println(moonIndex);
+  // Serial.println("updateMoonDisplay() called.");
+  //  Serial.println(moonIndex);
 
-  if (moonIndex != 29) {
+  if (moonImageIndex != 29) {
     tft.setViewport(VP_MOON_ICON_X, VP_MOON_ICON_Y, VP_MOON_ICON_W,
                     VP_MOON_ICON_H);
     tft.fillScreen(TFT_BLACK);
     tft.setTextColor(TFT_WHITE, TFT_BLACK);
     tft.setFreeFont(FONT_MOON_ICON);
-    tft.drawChar(moonMap[moonIndex], 0, 32, GFXFF);
+    tft.drawChar(moonMap[moonImageIndex], 0, 32, GFXFF);
     tft.drawCircle(19, 18, 15, TFT_WHITE);
     tft.drawCircle(19, 18, 16, TFT_WHITE);
     tft.resetViewport();
   } //
 
   else {
-    moonIndex = 0;
+    moonImageIndex = 0;
     /*
         Serial.println("------");
         tft.fillScreen(TFT_BLACK);
@@ -151,21 +150,25 @@ void updateTimeDisplay() {
 }
 
 void updateHoursDisplay() {
-  //Serial.println("updateHoursDisplay() called.");
-  
+  // Serial.println("updateHoursDisplay() called.");
+
   localTime = myTZ.toLocal(now());
 
   uint8_t tens = hour(localTime);
   uint8_t ones = tens % 10;
-  tens = tens / 10;
-  tens = tens % 10;
+  tens = (tens / 10) % 10;
 
   tft.setFreeFont(FONT_TIME);
   tft.setTextColor(TFT_GREEN, TFT_BLACK);
 
   // TViewports
   tft.setViewport(VP_TIME_X, VP_TIME_Y, VP_TIME_W, VP_TIME_H);
-  tft.drawNumber(tens, 0, 0, GFXFF);
+  if (tens != 0) {
+    tft.drawNumber(tens, 0, 0, GFXFF);
+  } //
+  else {
+    tft.drawChar(' ', 0, 0, GFXFF);
+  }
   tft.resetViewport();
 
   tft.setViewport(VP_TIME_W, VP_TIME_Y, VP_TIME_W, VP_TIME_H);
@@ -174,7 +177,7 @@ void updateHoursDisplay() {
 }
 
 void updateMinutesDisplay() {
-  //Serial.println("updateMinutesDisplay() called.");
+  // Serial.println("updateMinutesDisplay() called.");
 
   localTime = myTZ.toLocal(now());
 

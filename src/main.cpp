@@ -2,6 +2,7 @@
 #include "display.h"
 #include "network.h"
 #include <Wire.h>
+#include "datasources.h"
 
 // On Linux, you can use "date +T%s\n > /dev/ttyUSB0" forr UTC timezone
 
@@ -25,27 +26,11 @@ void setup() {
 }
 
 void loop() {
-  /*
-    static uint8_t previousSecond = 0;
-    if (timeStatus() != timeNotSet) {
-      if (second() != previousSecond) {
-
-        if (second() == 0) {
-          Serial.println("minute++");
-
-          if (minute() == 0) {
-            Serial.println("hour++");
-          }
-        }
-
-        previousSecond = second();
-        // serialClockDisplay();
-      }
-    }
-  */
 
   handleWiFi();
   handleNTP();
+
+  handleDataSources();
 
   handleDisplay();
 

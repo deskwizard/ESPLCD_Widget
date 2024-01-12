@@ -3,6 +3,7 @@
 #include "credentials.h"
 #include "datasources.h"
 #include "defines.h"
+#include <ESPmDNS.h>
 #include <WiFi.h>
 
 extern bool forceNTPFail;
@@ -11,16 +12,15 @@ void sendNTPpacket(IPAddress &address);
 void WiFiGotIP(WiFiEvent_t event, WiFiEventInfo_t info);
 void WiFiConnected(WiFiEvent_t event, WiFiEventInfo_t info);
 void WiFiDisconnected(WiFiEvent_t event, WiFiEventInfo_t info);
-void WiFiEvent(WiFiEvent_t event); // Debug and now not working probably
+void WiFiEvent(WiFiEvent_t event); // Debug and not working probably
 
-// choose one of them
+// Choose one of these
 #define NTP_LOCAL_DISC
 // #define NTP_LOCAL
 // #define REM_STATIC
 // #define REM_HOSTNAME
 // #define REM_POOL
 
-#include <ESPmDNS.h>
 bool localTimeServerAvailable = false;
 
 #include <WiFiUdp.h>
@@ -152,6 +152,8 @@ void WiFiGotIP(WiFiEvent_t event, WiFiEventInfo_t info) {
   findLocalNTP();
 
   getNtpTime();
+
+  // updateDataSources();
 } // got ip
 
 void WiFiConnected(WiFiEvent_t event, WiFiEventInfo_t info) {
