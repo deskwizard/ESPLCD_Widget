@@ -3,8 +3,7 @@
 #include "network.h"
 #include <Wire.h>
 
-// On Linux, you can use "date +T%s\n > /dev/ttyUSB0" (for example) for UTC time
-// zone
+// On Linux, you can use "date +T%s\n > /dev/ttyUSB0" forr UTC timezone
 
 #define LED_DEBUG 5
 
@@ -17,30 +16,33 @@ void setup() {
 
   Wire.begin(32, 33); // SCL - SDA
   Serial.begin(115200);
+  delay(1000);
   Serial.println("\nHellord");
 
   setupTime();
+  setupDisplay();
   setupWiFi();
 }
 
 void loop() {
+  /*
+    static uint8_t previousSecond = 0;
+    if (timeStatus() != timeNotSet) {
+      if (second() != previousSecond) {
 
-  static uint8_t previousSecond = 0;
-  if (timeStatus() != timeNotSet) {
-    if (second() != previousSecond) {
+        if (second() == 0) {
+          Serial.println("minute++");
 
-      if (second() == 0) {
-        Serial.println("minute++");
-
-        if (minute() == 0) {
-          Serial.println("hour++");
+          if (minute() == 0) {
+            Serial.println("hour++");
+          }
         }
-      }
 
-      previousSecond = second();
-      //serialClockDisplay();
+        previousSecond = second();
+        // serialClockDisplay();
+      }
     }
-  }
+  */
 
   handleWiFi();
   handleNTP();
@@ -61,6 +63,7 @@ void blink() {
     ledState = !ledState;
     digitalWrite(LED_DEBUG, ledState);
     previousMillis = currentMillis;
+    serialClockDisplay();
   }
 }
 

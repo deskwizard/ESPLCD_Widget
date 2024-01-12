@@ -14,6 +14,7 @@ TimeChangeRule mySTD = {"EST", First, Sun,
                         Nov,   2,     -300}; // Standard time = UTC - 5 hours
 TimeChangeRule *tcr; // Pointer to the time change rule, use to get TZ abbrev
 Timezone myTZ(myDST, mySTD);
+time_t localTime;
 
 // debugging
 bool forceNTPFail = false;
@@ -47,6 +48,7 @@ time_t updateTime() {
     return 0;
   } else {
     Serial.println("RTC time is Valid, time updated.");
+    
     return rtcTime + 1;
   }
 }
@@ -95,19 +97,19 @@ void printDigits(int digits) {
 
 void serialClockDisplay() {
 
-  time_t local = myTZ.toLocal(now());
+  localTime = myTZ.toLocal(now());
 
   // digital clock display of the time
-  Serial.print(hour(local));
+  Serial.print(hour(localTime));
   Serial.print(":");
-  printDigits(minute(local));
+  printDigits(minute(localTime));
   Serial.print(":");
-  printDigits(second(local));
+  printDigits(second(localTime));
   Serial.print(" ");
-  printDigits(day(local));
+  printDigits(day(localTime));
   Serial.print("/");
-  printDigits(month(local));
+  printDigits(month(localTime));
   Serial.print("/");
-  Serial.print(year(local));
+  Serial.print(year(localTime));
   Serial.println();
 }

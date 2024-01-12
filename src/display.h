@@ -1,6 +1,44 @@
 #ifndef _DISPLAY_H_
 #define _DISPLAY_H_
 
+#define DISP_W 320
+#define DISP_H 240
+
+// Static items
+#define COLON_X_OFFSET 150
+#define COLON_Y_OFFSET (VP_TIME_Y + 80)
+#define TOP_LINE_Y (VP_TIME_Y - 4)
+#define BTM_LINE_Y (VP_TIME_Y + 125)
+
+// Viewports
+#define VP_TIME_X 0
+#define VP_TIME_Y 65
+#define VP_TIME_W 75
+#define VP_TIME_H 110
+
+#define VP_DATE_Y (BTM_LINE_Y + 16)
+#define VP_DATE_W 320
+#define VP_DATE_H 60
+
+#define VP_MOON_ICON_X 5
+#define VP_MOON_ICON_Y 5
+#define VP_MOON_ICON_W 40
+#define VP_MOON_ICON_H 38
+
+// The custom font file attached to this sketch must be included
+#define GFXFF 1 // Stock font and GFXFF reference handle
+
+void setupDisplay();
 void handleDisplay();
+void drawStatic();
+void updateMoonDisplay();
+void updateDateString();
+void updateTimeDisplay(); // Updates both hours and minutes
+void updateHoursDisplay();
+void updateMinutesDisplay();
+void updateDateString();
+void updateDateDisplay();
+
+void neverGive();
 
 #endif
