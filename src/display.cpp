@@ -3,7 +3,6 @@
 #include <TimeLib.h>
 #include <Timezone.h>
 
-#include <Arduino.h>
 #include <SPI.h>
 #include <TFT_eSPI.h>
 
@@ -62,10 +61,14 @@ void drawStatic() {
 
 void setupDisplay() {
 
+  pinMode(TFT_BACKLIGHT, OUTPUT);
+
   tft.begin();
   tft.setRotation(3);
 
   tft.fillScreen(TFT_BLACK);
+
+  digitalWrite(TFT_BACKLIGHT, LOW);
 
   drawStatic();
   updateMoonDisplay();

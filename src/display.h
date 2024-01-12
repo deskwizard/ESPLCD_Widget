@@ -1,6 +1,8 @@
 #ifndef _DISPLAY_H_
 #define _DISPLAY_H_
 
+#define TFT_BACKLIGHT 5
+
 #define DISP_W 320
 #define DISP_H 240
 

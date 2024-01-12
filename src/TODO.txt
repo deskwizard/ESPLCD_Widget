@@ -5,6 +5,8 @@
         - Temperature min
         - Temperature current
 
+- Local sensor
+
 - Display brightness
     - hardware
     - software

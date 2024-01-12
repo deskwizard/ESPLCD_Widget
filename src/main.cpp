@@ -6,11 +6,6 @@
 
 // On Linux, you can use "date +T%s\n > /dev/ttyUSB0" forr UTC timezone
 
-#define LED_DEBUG 5
-
-void blink();
-void handleSerial();
-
 void setup() {
 
   pinMode(LED_DEBUG, OUTPUT);
