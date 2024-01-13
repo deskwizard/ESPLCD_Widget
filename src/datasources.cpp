@@ -80,8 +80,8 @@ void updateMoonData() {
 
   String fetchedJSON = http.getString();
 
-  Serial.print("Moon JSON: ");
-  Serial.println(fetchedJSON);
+  // Serial.print("Moon JSON: ");
+  // Serial.println(fetchedJSON);
 
   fetchedJSON = fetchedJSON.substring(1, fetchedJSON.length() - 1);
 
@@ -92,6 +92,7 @@ void updateMoonData() {
   moon.fetchSuccess = moonInfo["Error"]; // 0 = no errors
 
   Serial.println();
+  Serial.println("------ Moon Data ------");
 
   if (!moon.fetchSuccess) {
 
@@ -102,8 +103,6 @@ void updateMoonData() {
     moon.index = moonInfo["Index"];
 
     // Print the values
-    Serial.println ();
-    Serial.println ("------ Moon Data ------");
     Serial.print(moon.phase);
     Serial.print(" (");
     Serial.print(moon.name);
@@ -137,8 +136,8 @@ void updateWeatherData() {
     {"latitude":55.6875,"longitude":61.5,"generationtime_ms":0.014066696166992188,"utc_offset_seconds":0,"timezone":"GMT","timezone_abbreviation":"GMT","elevation":213.0,"current_units":{"time":"unixtime","interval":"seconds","temperature_2m":"°C"},"current":{"time":1705112100,"interval":900,"temperature_2m":-14.4}}
   */
 
-  Serial.print("URL: ");
-  Serial.println(fetchURL);
+  // Serial.print("URL: ");
+  // Serial.println(fetchURL);
 
   client.setInsecure();
 
@@ -147,16 +146,17 @@ void updateWeatherData() {
 
   String fetchedJSON = http.getString();
 
-  Serial.print("JSON: ");
-  Serial.println(fetchedJSON);
+  // Serial.print("JSON: ");
+  // Serial.println(fetchedJSON);
 
   deserializeJson(weatherInfo, fetchedJSON); // Parse response
 
   http.end();
 
   currentWeather.fetchSuccess = weatherInfo["error"]; // 0 = no errors
-  Serial.print("Weather fetch error: ");
-  Serial.println(currentWeather.fetchSuccess);
+
+  Serial.println();
+  Serial.println("------ Weather Data ------");
 
   if (currentWeather.fetchSuccess == 0) {
 
@@ -168,7 +168,6 @@ void updateWeatherData() {
     currentWeather.windDir = weatherInfo["current"]["wind_direction_10m"];
     currentWeather.humidity = weatherInfo["current"]["relative_humidity_2m"];
 
-    Serial.println();
     Serial.print("Current Temperature: ");
     Serial.print(currentWeather.temp);
     Serial.println("°C");
@@ -199,5 +198,9 @@ void updateWeatherData() {
     Serial.println();
 
     updateWeatherDisplay();
+  } //
+  else {
+    Serial.println("Weather fetch error: ");
+    Serial.println(currentWeather.fetchSuccess);
   }
 }
