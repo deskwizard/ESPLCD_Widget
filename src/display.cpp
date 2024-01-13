@@ -1,10 +1,9 @@
 #include "display.h"
 #include "defines.h"
-#include <TimeLib.h>
-#include <Timezone.h>
-
 #include <SPI.h>
 #include <TFT_eSPI.h>
+#include <TimeLib.h>
+#include <Timezone.h>
 
 #include "fonts/NotoSans12p.h"
 #include "fonts/NotoSans42p.h"
@@ -62,13 +61,13 @@ void drawStatic() {
 void setupDisplay() {
 
   pinMode(TFT_BACKLIGHT, OUTPUT);
+  ledcAttachPin(TFT_BACKLIGHT, PWM1_CH);
+  ledcSetup(PWM1_CH, PWM1_FREQ, PWM1_RES);
 
   tft.begin();
   tft.setRotation(3);
 
   tft.fillScreen(TFT_BLACK);
-
-  digitalWrite(TFT_BACKLIGHT, LOW);
 
   drawStatic();
   updateMoonDisplay();
@@ -107,6 +106,51 @@ void handleDisplay() {
         }
       }
     }
+  } // Time set
+
+  handleBacklight();
+}
+
+void handleBacklight() {
+
+  uint16_t outputPWMValue;
+
+  static uint16_t readings[CDS_AVG_COUNT] = {
+      0};                       // the readings from the analog input
+  static uint8_t readIndex = 0; // the index of the current reading
+  static uint32_t total = 0;    // the running total
+  static uint16_t average = 0;
+
+  uint32_t currentMillis = millis();
+  static uint32_t lastReadReadMillis = 0;
+
+  if ((uint32_t)(currentMillis - lastReadReadMillis) >= CDS_READ_RATE) {
+
+    total = total - readings[readIndex];
+    readings[readIndex] = analogRead(CDS_PIN) >> 2;
+    total = total + readings[readIndex];
+    readIndex = readIndex + 1;
+
+    if (readIndex >= CDS_AVG_COUNT) {
+      readIndex = 0;
+    }
+
+    average = total / CDS_AVG_COUNT;
+
+    if (average > PWM_MINIMUM) {
+      outputPWMValue = PWM_MINIMUM;
+    } else {
+      outputPWMValue = average;
+    }
+
+    // Serial.println(average);
+    // Serial.println(outputPWMValue);
+
+    // Check for limits before writing
+    ledcWrite(PWM1_CH, outputPWMValue);
+
+    lastReadReadMillis = currentMillis;
+    // Serial.println();
   }
 }
 

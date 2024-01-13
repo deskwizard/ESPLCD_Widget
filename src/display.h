@@ -1,10 +1,17 @@
 #ifndef _DISPLAY_H_
 #define _DISPLAY_H_
 
-#define TFT_BACKLIGHT 5
-
 #define DISP_W 320
 #define DISP_H 240
+
+#define TFT_BACKLIGHT 5
+#define PWM1_CH 0
+#define PWM1_RES 10
+#define PWM1_FREQ 1000
+#define CDS_PIN 34
+#define CDS_AVG_COUNT 50
+#define CDS_READ_RATE 50
+#define PWM_MINIMUM 900 // PWM is inverted!
 
 // Static items
 #define COLON_X_OFFSET 150
@@ -32,6 +39,7 @@
 
 void setupDisplay();
 void handleDisplay();
+void handleBacklight();
 void drawStatic();
 void updateMoonDisplay();
 void updateDateString();

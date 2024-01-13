@@ -3,7 +3,7 @@
 
 #include <Arduino.h>
 
-#define LED_DEBUG 17
+#define LED_DEBUG 4
 
 void blink();
 void handleSerial();

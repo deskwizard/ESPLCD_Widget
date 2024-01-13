@@ -7,10 +7,6 @@
 
 - Local sensor
 
-- Display brightness
-    - hardware
-    - software
-
 - Touch zones
     - Extra Info Moon
     - Extra Info Weather
