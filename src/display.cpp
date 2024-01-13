@@ -1,9 +1,10 @@
 #include "display.h"
-#include "defines.h"
 #include "datasources.h"
-
+#include "defines.h"
 
 #define FONT_SMALL &NotoSans_Regular12pt7b
+#define FONT_MED1 &NotoSans_Regular14pt7b
+#define FONT_MED2 &NotoSans_Regular20pt7b
 #define FONT_TIME &NotoSans_Regular70pt7b
 #define FONT_COLON &NotoSans_Regular42pt7b
 #define FONT_MOON_ICON &MoonPhases20pt7b
@@ -25,9 +26,6 @@ PNG png; // PNG decoder instance
 #define IMG_Y 0
 void pngDraw(PNGDRAW *pDraw);
 /**********************************************************************************/
-
-// uint8_t moonIndex = 8;
-extern uint8_t moonImageIndex;
 
 const uint8_t moonMap[29] = {'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j',
                              'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't',
@@ -53,8 +51,8 @@ void drawStatic() {
 
 void setupDisplay() {
 
-  Serial.print("index: ");
-  Serial.println(moon.index);
+  // Serial.print("index: ");
+  // Serial.println(moon.index);
 
   pinMode(TFT_BACKLIGHT, OUTPUT);
   ledcAttachPin(TFT_BACKLIGHT, PWM1_CH);
@@ -63,16 +61,51 @@ void setupDisplay() {
   tft.begin();
   tft.setRotation(3);
 
-  tft.fillScreen(TFT_BLACK);
+  // tft.fillScreen(TFT_BLACK);
+  tft.fillScreen(TFT_PURPLE);
 
   drawStatic();
-  updateMoonDisplay();
+
   updateTimeDisplay();
   updateDateString();
   updateDateDisplay();
+  updateMoonDisplay();
+  updateWeatherDisplay();
 
-  Serial.println("-------------------------------------------");
-  Serial.println();
+  // Serial.println("-------------------------------------------");
+  // Serial.println();
+}
+
+void updateWeatherDisplay() {
+
+  char buffer[50];
+
+  tft.setViewport(VP_WEA_X, VP_WEA_Y, VP_WEA_W, VP_WEA_H);
+  tft.fillScreen(TFT_BLUE);
+
+  tft.setTextColor(TFT_WHITE, TFT_BLACK);
+
+  if (currentWeather.fetchSuccess == 0) {
+    tft.setFreeFont(FONT_MED1);
+    snprintf(buffer, 50, "%.0f (%.0f)", currentWeather.temp,
+             currentWeather.feels);
+  } else {
+    tft.setFreeFont(FONT_SMALL);
+    snprintf(buffer, 50, "No Data Available");
+  }
+
+  tft.drawString(buffer, 0, 5, GFXFF);
+  /*
+    // tft.drawString("-20°C", 9, 29, GFXFF);
+    tft.drawFloat(currentWeather.temp, 0, 0, 0, GFXFF);
+    // tft.drawString("°C", 9, 29, GFXFF);
+    tft.drawString("(", 44, 0, GFXFF);
+
+    tft.drawFloat(currentWeather.feels, 0, 52, 0, GFXFF);
+    tft.drawString(")", 94, 0, GFXFF);
+  */
+
+  tft.resetViewport();
 }
 
 void handleDisplay() {
@@ -84,6 +117,8 @@ void handleDisplay() {
     localTime = myTZ.toLocal(now());
 
     if (minute(localTime) != previousMinute) {
+
+      serialClockDisplay();
 
       // Serial.print("---- M: ");
       // Serial.println(minute(localTime));
@@ -154,19 +189,39 @@ void updateMoonDisplay() {
   // Serial.println("updateMoonDisplay() called.");
   //  Serial.println(moonIndex);
 
-  if (moon.index != 29) {
-    tft.setViewport(VP_MOON_ICON_X, VP_MOON_ICON_Y, VP_MOON_ICON_W,
-                    VP_MOON_ICON_H);
-    tft.fillScreen(TFT_BLACK);
+  tft.setViewport(VP_MOON_ICON_X, VP_MOON_ICON_Y, VP_MOON_ICON_W,
+                  VP_MOON_ICON_H);
+  tft.fillScreen(TFT_BLACK);
+
+  if (moon.fetchSuccess != 0) {
+    tft.setTextColor(TFT_RED, TFT_BLACK);
+    tft.setFreeFont(FONT_MED2);
+    tft.drawChar('x', 9, 29, GFXFF);
+    tft.drawCircle(19, 18, 15, TFT_RED);
+    tft.drawCircle(19, 18, 16, TFT_RED);
+  } else {
     tft.setTextColor(TFT_WHITE, TFT_BLACK);
     tft.setFreeFont(FONT_MOON_ICON);
     tft.drawChar(moonMap[moon.index], 0, 32, GFXFF);
     tft.drawCircle(19, 18, 15, TFT_WHITE);
     tft.drawCircle(19, 18, 16, TFT_WHITE);
-    tft.resetViewport();
-  } //
-/*
+  }
+  /*
+  if (moon.index != 42) {
+    tft.setTextColor(TFT_WHITE, TFT_BLACK);
+    tft.setFreeFont(FONT_MOON_ICON);
+    tft.drawChar(moonMap[moon.index], 0, 32, GFXFF);
+    tft.drawCircle(19, 18, 15, TFT_WHITE);
+    tft.drawCircle(19, 18, 16, TFT_WHITE);
+  }
+
   else {
+    tft.setTextColor(TFT_RED, TFT_BLACK);
+    tft.setFreeFont(FONT_MED);
+    tft.drawChar('x', 9, 29, GFXFF);
+    tft.drawCircle(19, 18, 15, TFT_RED);
+    tft.drawCircle(19, 18, 16, TFT_RED);
+    /*
     moonImageIndex = 0;
 
     Serial.println("------");
@@ -183,8 +238,10 @@ void updateMoonDisplay() {
     updateDateDisplay();
 
     updateMoonDisplay();
+
   }
-   */
+*/
+  tft.resetViewport();
 }
 
 void updateTimeDisplay() {

@@ -13,11 +13,12 @@
 #define LONG 61.47
 
 struct weatherData {
-  float temp;
+  float temp = -42.69;
   float feels;
   float windSpeed;
   uint16_t windDir;
   uint8_t humidity;
+  uint8_t fetchSuccess = 42; // 0 = no errors
 };
 extern struct weatherData currentWeather;
 
@@ -25,11 +26,11 @@ extern struct weatherData currentWeather;
 #define URL_BASE_MOON "https://api.farmsense.net/v1/moonphases/?d="
 
 struct moonData {
-  uint8_t fetchSuccess; // 0 = no errors
-  uint8_t index = 8;
+  uint8_t index;
   float age;
   char phase[40];
   char name[40];
+  uint8_t fetchSuccess = 42; // 0 = no errors
 };
 extern struct moonData moon;
 

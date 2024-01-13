@@ -111,6 +111,8 @@ void updateWeatherData() {
 
   http.end();
 
+  currentWeather.fetchSuccess = 0; // Success
+
   currentWeather.temp = weatherInfo["current"]["temperature_2m"];
   currentWeather.feels = weatherInfo["current"]["apparent_temperature"];
   currentWeather.windSpeed = weatherInfo["current"]["wind_speed_10m"];
@@ -138,4 +140,6 @@ void updateWeatherData() {
   Serial.print(currentWeather.humidity);
   Serial.println("%");
   Serial.println();
+
+  updateWeatherDisplay();
 }

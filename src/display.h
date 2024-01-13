@@ -7,6 +7,9 @@
 #include <Timezone.h>
 
 #include "fonts/NotoSans12p.h"
+#include "fonts/NotoSans14p.h"
+#include "fonts/NotoSans16p.h"
+#include "fonts/NotoSans20p.h"
 #include "fonts/NotoSans42p.h"
 #include "fonts/NotoSans70p.h"
 #include "fonts/moonFont20p.h"
@@ -45,6 +48,11 @@
 #define VP_MOON_ICON_W 40
 #define VP_MOON_ICON_H 38
 
+#define VP_WEA_X 120
+#define VP_WEA_Y 5
+#define VP_WEA_W 200
+#define VP_WEA_H 38
+
 // The custom font file attached to this sketch must be included
 #define GFXFF 1 // Stock font and GFXFF reference handle
 
@@ -52,6 +60,7 @@ void setupDisplay();
 void handleDisplay();
 void handleBacklight();
 void drawStatic();
+void updateWeatherDisplay();
 void updateMoonDisplay();
 void updateDateString();
 void updateTimeDisplay(); // Updates both hours and minutes

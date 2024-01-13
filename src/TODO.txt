@@ -1,9 +1,6 @@
-- Weather
-    - Fetch
+- Current Weather
+    ! Fetch 
     - Icons
-        - Temperature max
-        - Temperature min
-        - Temperature current
 
 - Local sensor
 

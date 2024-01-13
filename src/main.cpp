@@ -40,7 +40,6 @@ void blink() {
     ledState = !ledState;
     digitalWrite(LED_DEBUG, ledState);
     previousMillis = currentMillis;
-    serialClockDisplay();
   }
 }
 
