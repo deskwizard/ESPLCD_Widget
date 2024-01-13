@@ -6,13 +6,13 @@
 #include <TimeLib.h>
 #include <Timezone.h>
 
-#include "fonts/NotoSans12p.h"
-#include "fonts/NotoSans14p.h"
-#include "fonts/NotoSans16p.h"
-#include "fonts/NotoSans20p.h"
-#include "fonts/NotoSans42p.h"
-#include "fonts/NotoSans70p.h"
-#include "fonts/moonFont20p.h"
+#include "fonts/NotoSans_Regular12pt7b.h"
+#include "fonts/NotoSans_Regular14pt7b.h"
+#include "fonts/NotoSans_Regular16pt7b.h"
+#include "fonts/NotoSans_Regular20pt7b.h"
+#include "fonts/NotoSans_Regular42pt7b.h"
+#include "fonts/NotoSans_Regular70pt7b.h"
+#include "fonts/MoonPhases20pt7b.h"
 
 #define DISP_W 320
 #define DISP_H 240
