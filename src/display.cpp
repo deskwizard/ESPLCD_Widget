@@ -4,6 +4,7 @@
 #include <TFT_eSPI.h>
 #include <TimeLib.h>
 #include <Timezone.h>
+#include "datasources.h"
 
 #include "fonts/NotoSans12p.h"
 #include "fonts/NotoSans42p.h"
@@ -25,7 +26,7 @@ extern Timezone myTZ;
 #include "never.h" // Image is stored here in an 8 bit array
 #include <PNGdec.h>
 
-PNG png; // PNG decoder inatance
+PNG png; // PNG decoder instance
 
 #define IMG_MAX_W 240 // Adjust for your images
 #define IMG_X 40
@@ -59,6 +60,9 @@ void drawStatic() {
 }
 
 void setupDisplay() {
+
+  Serial.print("index: ");
+  Serial.println(moon.index);
 
   pinMode(TFT_BACKLIGHT, OUTPUT);
   ledcAttachPin(TFT_BACKLIGHT, PWM1_CH);
@@ -158,37 +162,37 @@ void updateMoonDisplay() {
   // Serial.println("updateMoonDisplay() called.");
   //  Serial.println(moonIndex);
 
-  if (moonImageIndex != 29) {
+  if (moon.index != 29) {
     tft.setViewport(VP_MOON_ICON_X, VP_MOON_ICON_Y, VP_MOON_ICON_W,
                     VP_MOON_ICON_H);
     tft.fillScreen(TFT_BLACK);
     tft.setTextColor(TFT_WHITE, TFT_BLACK);
     tft.setFreeFont(FONT_MOON_ICON);
-    tft.drawChar(moonMap[moonImageIndex], 0, 32, GFXFF);
+    tft.drawChar(moonMap[moon.index], 0, 32, GFXFF);
     tft.drawCircle(19, 18, 15, TFT_WHITE);
     tft.drawCircle(19, 18, 16, TFT_WHITE);
     tft.resetViewport();
   } //
-
+/*
   else {
     moonImageIndex = 0;
-    /*
-        Serial.println("------");
-        tft.fillScreen(TFT_BLACK);
-        neverGive();
-        delay(5000);
 
-        tft.fillScreen(TFT_BLACK);
-        delay(5000);
+    Serial.println("------");
+    tft.fillScreen(TFT_BLACK);
+    neverGive();
+    delay(5000);
 
-        drawStatic();
+    tft.fillScreen(TFT_BLACK);
+    delay(5000);
 
-        updateTimeDisplay();
-        updateDateDisplay();
+    drawStatic();
 
-        updateMoonDisplay();
-        */
+    updateTimeDisplay();
+    updateDateDisplay();
+
+    updateMoonDisplay();
   }
+   */
 }
 
 void updateTimeDisplay() {
@@ -214,7 +218,7 @@ void updateHoursDisplay() {
     tft.drawNumber(tens, 0, 0, GFXFF);
   } //
   else {
-    tft.drawChar(' ', 0, 0, GFXFF);
+    tft.fillScreen(TFT_BLACK);
   }
   tft.resetViewport();
 

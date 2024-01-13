@@ -11,7 +11,7 @@
 #define CDS_PIN 34
 #define CDS_AVG_COUNT 50
 #define CDS_READ_RATE 50
-#define PWM_MINIMUM 900 // PWM is inverted!
+#define PWM_MINIMUM 950 // PWM is inverted!
 
 // Static items
 #define COLON_X_OFFSET 150
