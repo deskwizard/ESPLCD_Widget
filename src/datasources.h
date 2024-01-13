@@ -5,31 +5,38 @@
 #include <HTTPClient.h>
 #include <WiFiClientSecure.h>
 
-#define BUF_SIZE 300     // Buffer size
+#define BUF_SIZE 300 // Buffer size
+
+#define DATA_UPDATE_INTERVAL (MINUTES_TO_MS * 5)
 
 ////////////////////////////// Weather //////////////////////////////
-#define URL_BASE_WEATHER "https://api.open-meteo.com/v1/forecast?timeformat=unixtime&"
-#define LAT 55.70
-#define LONG 61.47
+#define URL_BASE_WEATHER                                                       \
+  "https://api.open-meteo.com/v1/forecast?timeformat=unixtime&"
+#define LAT 45.70
+#define LONG -71.47
 
 struct weatherData {
-  float temp = -42.69;
+  float temp;
   float feels;
+  float precipitation;
+  uint8_t cloudCover;
   float windSpeed;
   uint16_t windDir;
   uint8_t humidity;
   uint8_t fetchSuccess = 42; // 0 = no errors
 };
+
 extern struct weatherData currentWeather;
 
 ////////////////////////////// Moon //////////////////////////////
 #define URL_BASE_MOON "https://api.farmsense.net/v1/moonphases/?d="
 
 struct moonData {
-  uint8_t index;
-  float age;
-  char phase[40];
   char name[40];
+  char phase[40];
+  float age;
+  float illumination;
+  uint8_t index;
   uint8_t fetchSuccess = 42; // 0 = no errors
 };
 extern struct moonData moon;

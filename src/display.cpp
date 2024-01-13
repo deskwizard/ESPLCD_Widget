@@ -87,7 +87,7 @@ void updateWeatherDisplay() {
 
   if (currentWeather.fetchSuccess == 0) {
     tft.setFreeFont(FONT_MED1);
-    snprintf(buffer, 50, "%.0f (%.0f)", currentWeather.temp,
+    snprintf(buffer, 50, "%.0f°C (%.0f°C)", currentWeather.temp,
              currentWeather.feels);
   } else {
     tft.setFreeFont(FONT_SMALL);
@@ -95,15 +95,6 @@ void updateWeatherDisplay() {
   }
 
   tft.drawString(buffer, 0, 5, GFXFF);
-  /*
-    // tft.drawString("-20°C", 9, 29, GFXFF);
-    tft.drawFloat(currentWeather.temp, 0, 0, 0, GFXFF);
-    // tft.drawString("°C", 9, 29, GFXFF);
-    tft.drawString("(", 44, 0, GFXFF);
-
-    tft.drawFloat(currentWeather.feels, 0, 52, 0, GFXFF);
-    tft.drawString(")", 94, 0, GFXFF);
-  */
 
   tft.resetViewport();
 }

@@ -16,7 +16,7 @@
 #define NTP_LOCAL_PORT 8888 // Local port to listen for UDP packets
 #define NTP_PACKET_SIZE 48
 #define NTP_MAX_RETRY 10 // Retries every 2 seconds or thereabout
-#define NTP_DEFAULT_DELAY (MINUTES_TO_MS * 5)
+#define NTP_DEFAULT_DELAY (MINUTES_TO_MS * 30)
 #define NTP_SHORT_DELAY (MINUTES_TO_MS * 5)
 
 void setupWiFi();

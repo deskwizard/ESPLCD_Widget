@@ -1,6 +1,7 @@
 #include "datasources.h"
 #include "defines.h"
 #include "display.h"
+#include "network.h"
 
 WiFiClientSecure client;
 HTTPClient http;
@@ -10,7 +11,8 @@ uint32_t unixTime = 1904249932; // Debug
 void handleDataSources();
 void updateDataSources();
 
-char fetchURL[BUF_SIZE]; // Buffer for working on JSON (used by both moon and weather)
+char fetchURL[BUF_SIZE]; // Buffer for working on JSON (used by both moon and
+                         // weather)
 
 ////////////////////////////// Moon //////////////////////////////
 JsonDocument moonInfo; // Allocate the JSON document
@@ -22,7 +24,35 @@ struct weatherData currentWeather;
 
 /////////////////////////////////////////////////////////////////////////////
 
-void handleDataSources() {}
+void handleDataSources() {
+
+  // if "it's time" and wifi is connected
+
+  uint32_t currentMillis = millis();
+  static uint32_t dataUpdateMillis = currentMillis;
+  static uint32_t dataUpdateDelay = (MINUTES_TO_MS * 1);
+
+  if ((uint32_t)(currentMillis - dataUpdateMillis) >= dataUpdateDelay) {
+
+    Serial.println();
+    Serial.print("--- Data Update Timeout at ");
+    serialClockDisplay();
+    Serial.println();
+
+    if (WiFi.status() == WL_CONNECTED) {
+      updateWeatherData();
+      updateMoonData();
+      dataUpdateDelay = DATA_UPDATE_INTERVAL;
+    }
+    /*
+      else {
+        Serial.println("---- WiFi disconnected, attempting connection...");
+        connectWiFi();
+      }
+    */
+    dataUpdateMillis = currentMillis;
+  }
+}
 
 void updateDataSources() {
   updateMoonData();
@@ -50,8 +80,8 @@ void updateMoonData() {
 
   String fetchedJSON = http.getString();
 
-  // Serial.print("JSON: ");
-  // Serial.println(fetchedJSON);
+  Serial.print("Moon JSON: ");
+  Serial.println(fetchedJSON);
 
   fetchedJSON = fetchedJSON.substring(1, fetchedJSON.length() - 1);
 
@@ -61,20 +91,33 @@ void updateMoonData() {
 
   moon.fetchSuccess = moonInfo["Error"]; // 0 = no errors
 
-  if (!moon.fetchSuccess) {
-    moon.index = moonInfo["Index"];
-    moon.age = moonInfo["Age"];
+  Serial.println();
 
-    strcpy(moon.phase, moonInfo["Phase"]);
+  if (!moon.fetchSuccess) {
+
     strcpy(moon.name, moonInfo["Moon"][0]);
+    strcpy(moon.phase, moonInfo["Phase"]);
+    moon.age = moonInfo["Age"];
+    moon.illumination = moonInfo["Illumination"];
+    moon.index = moonInfo["Index"];
 
     // Print the values
-    Serial.println(moon.phase);
-    Serial.println(moon.name);
+    Serial.println ();
+    Serial.println ("------ Moon Data ------");
+    Serial.print(moon.phase);
+    Serial.print(" (");
+    Serial.print(moon.name);
+    Serial.println(")");
+    Serial.print(moon.illumination);
+    Serial.println("% Illumination");
+    Serial.print(moon.age, 2);
+    Serial.println("days old");
+    Serial.print("Image index: ");
     Serial.println(moon.index);
-    Serial.println(moon.age, 8);
+
     updateMoonDisplay();
-  } else {
+  } //
+  else {
     Serial.print("Moon data fetch error: ");
     Serial.println(moon.fetchSuccess);
   }
@@ -85,10 +128,10 @@ void updateMoonData() {
 void updateWeatherData() {
 
   snprintf(fetchURL, BUF_SIZE,
-           URL_BASE_WEATHER "latitude=%.2f&longitude=%.2f&%s%s", LAT, LONG,
+           URL_BASE_WEATHER "latitude=%.8f&longitude=%.2f&%s%s", LAT, LONG,
            "current=",
            "temperature_2m,relative_humidity_2m,apparent_temperature,"
-           "precipitation,wind_speed_10m,wind_direction_10m");
+           "precipitation,wind_speed_10m,wind_direction_10m,cloud_cover");
 
   /* Reply from API:
     {"latitude":55.6875,"longitude":61.5,"generationtime_ms":0.014066696166992188,"utc_offset_seconds":0,"timezone":"GMT","timezone_abbreviation":"GMT","elevation":213.0,"current_units":{"time":"unixtime","interval":"seconds","temperature_2m":"°C"},"current":{"time":1705112100,"interval":900,"temperature_2m":-14.4}}
@@ -111,35 +154,50 @@ void updateWeatherData() {
 
   http.end();
 
-  currentWeather.fetchSuccess = 0; // Success
+  currentWeather.fetchSuccess = weatherInfo["error"]; // 0 = no errors
+  Serial.print("Weather fetch error: ");
+  Serial.println(currentWeather.fetchSuccess);
 
-  currentWeather.temp = weatherInfo["current"]["temperature_2m"];
-  currentWeather.feels = weatherInfo["current"]["apparent_temperature"];
-  currentWeather.windSpeed = weatherInfo["current"]["wind_speed_10m"];
-  currentWeather.windDir = weatherInfo["current"]["wind_direction_10m"];
-  currentWeather.humidity = weatherInfo["current"]["relative_humidity_2m"];
+  if (currentWeather.fetchSuccess == 0) {
 
-  Serial.println();
-  Serial.print("Current Temperature: ");
-  Serial.print(currentWeather.temp);
-  Serial.println("°C");
+    currentWeather.temp = weatherInfo["current"]["temperature_2m"];
+    currentWeather.feels = weatherInfo["current"]["apparent_temperature"];
+    currentWeather.precipitation = weatherInfo["current"]["precipitation"];
+    currentWeather.cloudCover = weatherInfo["current"]["cloud_cover"];
+    currentWeather.windSpeed = weatherInfo["current"]["wind_speed_10m"];
+    currentWeather.windDir = weatherInfo["current"]["wind_direction_10m"];
+    currentWeather.humidity = weatherInfo["current"]["relative_humidity_2m"];
 
-  Serial.print("Apparent Temperature: ");
-  Serial.print(currentWeather.feels);
-  Serial.println("°C");
+    Serial.println();
+    Serial.print("Current Temperature: ");
+    Serial.print(currentWeather.temp);
+    Serial.println("°C");
 
-  Serial.print("Wind Speed: ");
-  Serial.print(currentWeather.windSpeed);
-  Serial.println("km/h");
+    Serial.print("Apparent Temperature: ");
+    Serial.print(currentWeather.feels);
+    Serial.println("°C");
 
-  Serial.print("Wind Direction: ");
-  Serial.print(currentWeather.windDir);
-  Serial.println("°");
+    Serial.print("Precipitation: ");
+    Serial.print(currentWeather.precipitation);
+    Serial.println("mm");
 
-  Serial.print("Relative Humidity: ");
-  Serial.print(currentWeather.humidity);
-  Serial.println("%");
-  Serial.println();
+    Serial.print("Cloud Cover: ");
+    Serial.print(currentWeather.cloudCover);
+    Serial.println("%");
 
-  updateWeatherDisplay();
+    Serial.print("Wind Speed: ");
+    Serial.print(currentWeather.windSpeed);
+    Serial.println("km/h");
+
+    Serial.print("Wind Direction: ");
+    Serial.print(currentWeather.windDir);
+    Serial.println("°");
+
+    Serial.print("Relative Humidity: ");
+    Serial.print(currentWeather.humidity);
+    Serial.println("%");
+    Serial.println();
+
+    updateWeatherDisplay();
+  }
 }

@@ -117,6 +117,7 @@ void WiFiGotIP(WiFiEvent_t event, WiFiEventInfo_t info) {
 
   getNtpTime();
 
+
 } // got ip
 
 void WiFiConnected(WiFiEvent_t event, WiFiEventInfo_t info) {
@@ -169,10 +170,9 @@ void handleNTP() {
     serialClockDisplay();
     Serial.println();
 
-    if (WiFi.status() ==
-        WL_CONNECTED) { //////////////////////////////////////////////////////////////////////////////
+    if (WiFi.status() == WL_CONNECTED) {
       getNtpTime();
-      updateDataSources();
+      //updateDataSources();
     } else {
       Serial.println("---- WiFi disconnected, attempting connection...");
       connectWiFi();
@@ -405,8 +405,9 @@ void findLocalNTP() {
     //
     localTimeServerAvailable = true;
   }
-
+/*
   Serial.print("Local available: ");
   Serial.println(localTimeServerAvailable);
   Serial.println();
+*/  
 }
