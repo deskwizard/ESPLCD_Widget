@@ -13,7 +13,6 @@
 #include "fonts/NotoSans42p.h"
 #include "fonts/NotoSans70p.h"
 #include "fonts/moonFont20p.h"
-#include "fonts/qweather20p.h"
 
 #define DISP_W 320
 #define DISP_H 240
