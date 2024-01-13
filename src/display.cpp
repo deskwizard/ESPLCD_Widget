@@ -1,16 +1,8 @@
 #include "display.h"
 #include "defines.h"
-#include <SPI.h>
-#include <TFT_eSPI.h>
-#include <TimeLib.h>
-#include <Timezone.h>
 #include "datasources.h"
 
-#include "fonts/NotoSans12p.h"
-#include "fonts/NotoSans42p.h"
-#include "fonts/NotoSans70p.h"
-#include "fonts/moonFont20p.h"
-#include "fonts/qweather20p.h"
+
 #define FONT_SMALL &NotoSans_Regular12pt7b
 #define FONT_TIME &NotoSans_Regular70pt7b
 #define FONT_COLON &NotoSans_Regular42pt7b

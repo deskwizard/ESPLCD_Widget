@@ -2,9 +2,6 @@
 #include "defines.h"
 #include "display.h"
 #include "network.h"
-#include <Wire.h>
-
-// On Linux, you can use "date +T%s\n > /dev/ttyUSB0" for UTC timezone
 
 void setup() {
 

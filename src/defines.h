@@ -2,6 +2,7 @@
 #define _DEFINES_H_
 
 #include <Arduino.h>
+#include <Wire.h>
 
 #define LED_DEBUG 4
 

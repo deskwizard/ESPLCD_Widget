@@ -1,22 +1,21 @@
+
+// On Linux, you can use "date +T%s\n > /dev/ttyUSB0" for UTC timezone
+
 #include "time.h"
 #include "defines.h"
 
-uint8_t timeHours = 6;
-uint8_t timeMinutes = 45;
 extern bool NTPState;
 
 time_t updateTime();
 
 // US Eastern Time Zone (New York, Detroit, Toronto, Montreal, etc...)
-TimeChangeRule myDST = {"EDT", Second, Sun,
-                        Mar,   2,      -240}; // Daylight time = UTC - 4 hours
-TimeChangeRule mySTD = {"EST", First, Sun,
-                        Nov,   2,     -300}; // Standard time = UTC - 5 hours
+TimeChangeRule myDST = {"EDT", Second, Sun, Mar, 2, -240}; // UTC - 4 hours
+TimeChangeRule mySTD = {"EST", First, Sun, Nov, 2, -300};  // UTC - 5 hours
 TimeChangeRule *tcr; // Pointer to the time change rule, use to get TZ abbrev
 Timezone myTZ(myDST, mySTD);
 time_t localTime;
 
-// debugging
+// Debug
 bool forceNTPFail = false;
 bool forceBadRTC = false;
 bool serialClockEnabled = false;
@@ -27,8 +26,8 @@ void setupTime() {
   setSyncProvider(updateTime);
   setSyncInterval(RTC_UPDATE_INTERVAL);
 
-  Serial.print("DST?: ");
-  Serial.println(myTZ.locIsDST(now()));
+  // Serial.print("DST?: ");
+  // Serial.println(myTZ.locIsDST(now()));
 }
 
 time_t updateTime() {
@@ -48,7 +47,7 @@ time_t updateTime() {
     return 0;
   } else {
     Serial.println("RTC time is Valid, time updated.");
-    
+
     return rtcTime + 1;
   }
 }

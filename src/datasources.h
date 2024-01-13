@@ -1,8 +1,9 @@
 #ifndef _DATASOURCES_H_
 #define _DATASOURCES_H_
 
-#include "stdint.h"
-
+#include <ArduinoJson.h>
+#include <HTTPClient.h>
+#include <WiFiClientSecure.h>
 
 #define BUF_SIZE 300     // Buffer size
 

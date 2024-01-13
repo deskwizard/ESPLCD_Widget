@@ -1,55 +1,26 @@
 #include "network.h"
-#include "ArduinoJson.h"
-#include "credentials.h"
 #include "datasources.h"
 #include "defines.h"
-#include <ESPmDNS.h>
-#include <WiFi.h>
 
-extern bool forceNTPFail;
-
-void sendNTPpacket(IPAddress &address);
-void WiFiGotIP(WiFiEvent_t event, WiFiEventInfo_t info);
-void WiFiConnected(WiFiEvent_t event, WiFiEventInfo_t info);
-void WiFiDisconnected(WiFiEvent_t event, WiFiEventInfo_t info);
-void WiFiEvent(WiFiEvent_t event); // Debug and not working probably
-
-// Choose one of these
-#define NTP_LOCAL_DISC
-// #define NTP_LOCAL
-// #define REM_STATIC
-// #define REM_HOSTNAME
-// #define REM_POOL
-
-bool localTimeServerAvailable = false;
-
-#include <WiFiUdp.h>
 WiFiUDP Udp;
 
 extern const char ssid[];
 extern const char password[];
-extern const char hostname[];
+extern const char deviceHostname[];
 
+////////////////////////////// NTP //////////////////////////////
+extern bool forceNTPFail; // Debug
+
+bool localTimeServerAvailable = false;
+bool NTPState = false;
 uint8_t connectionRetryCounter = 0;
-const uint8_t maxRetryCount =
-    10; // Number of tries it will make to connect before giving up, tries are
-        // around 2sec appart
 uint32_t WiFiRetryMillis = 0;
 uint32_t WiFiRetryDelay = MINUTES_TO_MS * 5;
-
-bool NTPState = false;
-const int16_t NTP_PACKET_SIZE =
-    48; // NTP time is in the first 48 bytes of message
-uint8_t
-    packetBuffer[NTP_PACKET_SIZE]; // Buffer to hold incoming & outgoing packets
-uint16_t localPort = 8888;         // Local port to listen for UDP packets
+uint8_t packetBuffer[NTP_PACKET_SIZE]; // Buffer to hold in/out packets
 uint32_t NtpRetryMillis = 0;
-const uint32_t NtpUpdateDefaultDelay = MINUTES_TO_MS * 5;
-const uint32_t NtpUpdateShortDelay = MINUTES_TO_MS * 5;
-uint32_t NtpUpdateDelay = NtpUpdateDefaultDelay;
+uint32_t NtpUpdateDelay = NTP_DEFAULT_DELAY;
 
-// NTP Servers:
-
+/////////////////// NTP Servers //////////////////
 #ifdef NTP_LOCAL_DISC
 char ntpServerName[64] = "";
 IPAddress ntpServerIP(0, 0, 0, 0);
@@ -80,28 +51,21 @@ static const char ntpServerName[] = "us.pool.ntp.org";
 // static const char ntpServerName[] = "time-b.timefreq.bldrdoc.gov";
 // static const char ntpServerName[] = "time-c.timefreq.bldrdoc.gov";
 
+/////////////////////////////////////////////////////////////////////////////
+
 void setupWiFi() {
 
-  // Delete old config
+  // Deletes previous configuration
   WiFi.disconnect(true);
 
   delay(1000);
 
   // Register WiFi any event callback function
   WiFi.onEvent(WiFiEvent);
-
-  WiFi.onEvent(WiFiGotIP,
-               WiFiEvent_t::ARDUINO_EVENT_WIFI_STA_GOT_IP); // Register GOT_IP
-                                                            // event function
-  WiFi.onEvent(
-      WiFiConnected,
-      WiFiEvent_t::ARDUINO_EVENT_WIFI_STA_CONNECTED); // Register CONNECTED
-                                                      // event function
-  WiFi.onEvent(
-      WiFiDisconnected,
-      WiFiEvent_t::ARDUINO_EVENT_WIFI_STA_DISCONNECTED); // Register
-                                                         // DISCONNECTED event
-                                                         // function
+  WiFi.onEvent(WiFiGotIP, WiFiEvent_t::ARDUINO_EVENT_WIFI_STA_GOT_IP);
+  WiFi.onEvent(WiFiConnected, WiFiEvent_t::ARDUINO_EVENT_WIFI_STA_CONNECTED);
+  WiFi.onEvent(WiFiDisconnected,
+               WiFiEvent_t::ARDUINO_EVENT_WIFI_STA_DISCONNECTED);
 
   connectWiFi();
 }
@@ -112,7 +76,7 @@ void connectWiFi() {
   WiFi.mode(WIFI_AP);
   WiFi.config(INADDR_NONE, INADDR_NONE, INADDR_NONE);
   WiFi.begin(ssid, password);
-  WiFi.setHostname(hostname);
+  WiFi.setHostname(deviceHostname);
 }
 
 void disconnectWiFi() {
@@ -178,7 +142,7 @@ void WiFiDisconnected(WiFiEvent_t event, WiFiEventInfo_t info) {
   Serial.println(connectionRetryCounter);
 
   // If we retried X times, stop trying
-  if (connectionRetryCounter == maxRetryCount) {
+  if (connectionRetryCounter == NTP_MAX_RETRY) {
     Serial.print(">>> WiFi --- ");
     Serial.println("Connection attempt failed");
     Serial.println();
@@ -226,7 +190,7 @@ void getNtpTime() {
     Serial.print("--- NTP  --- ");
     Serial.println("Volontary failure");
     NTPState = false;
-    NtpUpdateDelay = NtpUpdateShortDelay;
+    NtpUpdateDelay = NTP_SHORT_DELAY;
     return;
   }
 
@@ -269,7 +233,7 @@ void getNtpTime() {
   Serial.print(ntpServerIP);
   Serial.println(")...");
 
-  Udp.begin(localPort); // Start UDP for NTP
+  Udp.begin(NTP_LOCAL_PORT); // Start UDP for NTP
 
   sendNTPpacket(ntpServerIP);
 
@@ -304,7 +268,7 @@ void getNtpTime() {
 
       NTPState = true;
       setTime(ntpTime);
-      NtpUpdateDelay = NtpUpdateDefaultDelay;
+      NtpUpdateDelay = NTP_DEFAULT_DELAY;
 
       Serial.println();
       return;
@@ -315,7 +279,7 @@ void getNtpTime() {
   Serial.println("No NTP Response");
   Serial.println();
   NTPState = false;
-  NtpUpdateDelay = NtpUpdateShortDelay;
+  NtpUpdateDelay = NTP_SHORT_DELAY;
   // disconnectWiFi();
 }
 

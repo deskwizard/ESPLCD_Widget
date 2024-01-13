@@ -1,9 +1,6 @@
 #include "datasources.h"
 #include "defines.h"
 #include "display.h"
-#include <ArduinoJson.h>
-#include <HTTPClient.h>
-#include <WiFiClientSecure.h>
 
 WiFiClientSecure client;
 HTTPClient http;
