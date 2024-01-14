@@ -88,7 +88,7 @@ void updateWeatherDisplay() {
 
   if (currentWeather.fetchSuccess == 0) {
     tft.setFreeFont(FONT_MED1);
-    snprintf(buffer, 50, "%.0f°C (%.0f°C)", currentWeather.temp,
+    snprintf(buffer, 50, "%.0f°C / %.0f°C", currentWeather.temp,
              currentWeather.feels);
   } //
   else {
