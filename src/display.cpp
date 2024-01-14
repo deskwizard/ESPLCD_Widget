@@ -1,3 +1,6 @@
+// https://www.codeproject.com/Articles/5336116/Img2Cpp-Create-Cplusplus-Headers-for-Embedding-Ima
+// https://notisrac.github.io/FileToCArray/
+
 #include "display.h"
 #include "datasources.h"
 #include "defines.h"
@@ -8,7 +11,7 @@
 #define FONT_TIME &NotoSans_Regular70pt7b
 #define FONT_COLON &NotoSans_Regular42pt7b
 #define FONT_MOON_ICON &MoonPhases20pt7b
-#define FONT_WEATHER_ICON &qweather_icons20pt7b
+//#define FONT_WEATHER_ICON &qweather_icons20pt7b
 
 TFT_eSPI tft = TFT_eSPI();
 
@@ -26,10 +29,6 @@ PNG png; // PNG decoder instance
 #define IMG_Y 0
 void pngDraw(PNGDRAW *pDraw);
 /**********************************************************************************/
-
-const uint8_t moonMap[29] = {'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j',
-                             'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't',
-                             'u', 'v', 'w', 'x', 'y', 'z', 'A', 'B'};
 
 char dateString[50];
 
@@ -190,48 +189,14 @@ void updateMoonDisplay() {
     tft.drawChar('x', 9, 29, GFXFF);
     tft.drawCircle(19, 18, 15, TFT_RED);
     tft.drawCircle(19, 18, 16, TFT_RED);
-  } else {
-    tft.setTextColor(TFT_WHITE, TFT_BLACK);
-    tft.setFreeFont(FONT_MOON_ICON);
-    tft.drawChar(moonMap[moon.index], 0, 32, GFXFF);
-    tft.drawCircle(19, 18, 15, TFT_WHITE);
-    tft.drawCircle(19, 18, 16, TFT_WHITE);
-  }
-  /*
-  if (moon.index != 42) {
-    tft.setTextColor(TFT_WHITE, TFT_BLACK);
-    tft.setFreeFont(FONT_MOON_ICON);
-    tft.drawChar(moonMap[moon.index], 0, 32, GFXFF);
-    tft.drawCircle(19, 18, 15, TFT_WHITE);
-    tft.drawCircle(19, 18, 16, TFT_WHITE);
-  }
-
+  } //
   else {
-    tft.setTextColor(TFT_RED, TFT_BLACK);
-    tft.setFreeFont(FONT_MED);
-    tft.drawChar('x', 9, 29, GFXFF);
-    tft.drawCircle(19, 18, 15, TFT_RED);
-    tft.drawCircle(19, 18, 16, TFT_RED);
-    /*
-    moonImageIndex = 0;
-
-    Serial.println("------");
-    tft.fillScreen(TFT_BLACK);
-    neverGive();
-    delay(5000);
-
-    tft.fillScreen(TFT_BLACK);
-    delay(5000);
-
-    drawStatic();
-
-    updateTimeDisplay();
-    updateDateDisplay();
-
-    updateMoonDisplay();
-
+    tft.setTextColor(TFT_WHITE, TFT_BLACK);
+    tft.setFreeFont(FONT_MOON_ICON);
+    tft.drawChar(moonMap[moon.index], 0, 32, GFXFF);
+    tft.drawCircle(19, 18, 15, TFT_WHITE);
+    tft.drawCircle(19, 18, 16, TFT_WHITE);
   }
-*/
   tft.resetViewport();
 }
 

@@ -37,12 +37,15 @@ void handleDataSources() {
     Serial.println();
     Serial.print("--- Data Update Timeout at ");
     serialClockDisplay();
-    Serial.println();
 
     if (WiFi.status() == WL_CONNECTED) {
       updateWeatherData();
       updateMoonData();
       dataUpdateDelay = DATA_UPDATE_INTERVAL;
+    }
+    else {
+      Serial.println("No network");
+      dataUpdateDelay = (MINUTES_TO_MS * 5);
     }
     /*
       else {
@@ -110,7 +113,7 @@ void updateMoonData() {
     Serial.print(moon.illumination);
     Serial.println("% Illumination");
     Serial.print(moon.age, 2);
-    Serial.println("days old");
+    Serial.println(" days old");
     Serial.print("Image index: ");
     Serial.println(moon.index);
 

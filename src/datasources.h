@@ -7,7 +7,7 @@
 
 #define BUF_SIZE 300 // Buffer size
 
-#define DATA_UPDATE_INTERVAL (MINUTES_TO_MS * 5)
+#define DATA_UPDATE_INTERVAL (MINUTES_TO_MS * 15)
 
 ////////////////////////////// Weather //////////////////////////////
 #define URL_BASE_WEATHER                                                       \

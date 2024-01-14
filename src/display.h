@@ -55,6 +55,10 @@
 // The custom font file attached to this sketch must be included
 #define GFXFF 1 // Stock font and GFXFF reference handle
 
+const uint8_t moonMap[29] = {'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j',
+                             'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't',
+                             'u', 'v', 'w', 'x', 'y', 'z', 'A', 'B'};
+
 void setupDisplay();
 void handleDisplay();
 void handleBacklight();
