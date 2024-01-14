@@ -11,7 +11,7 @@
 #define FONT_TIME &NotoSans_Regular70pt7b
 #define FONT_COLON &NotoSans_Regular42pt7b
 #define FONT_MOON_ICON &MoonPhases20pt7b
-//#define FONT_WEATHER_ICON &qweather_icons20pt7b
+// #define FONT_WEATHER_ICON &qweather_icons20pt7b
 
 TFT_eSPI tft = TFT_eSPI();
 
@@ -60,8 +60,8 @@ void setupDisplay() {
   tft.begin();
   tft.setRotation(3);
 
-  // tft.fillScreen(TFT_BLACK);
-  tft.fillScreen(TFT_PURPLE);
+  tft.fillScreen(TFT_BLACK);
+  // tft.fillScreen(TFT_PURPLE);
 
   drawStatic();
 
@@ -80,7 +80,9 @@ void updateWeatherDisplay() {
   char buffer[50];
 
   tft.setViewport(VP_WEA_X, VP_WEA_Y, VP_WEA_W, VP_WEA_H);
-  tft.fillScreen(TFT_BLUE);
+
+  // tft.fillScreen(TFT_BLUE);
+  tft.fillScreen(TFT_BLACK);
 
   tft.setTextColor(TFT_WHITE, TFT_BLACK);
 
@@ -88,7 +90,8 @@ void updateWeatherDisplay() {
     tft.setFreeFont(FONT_MED1);
     snprintf(buffer, 50, "%.0f°C (%.0f°C)", currentWeather.temp,
              currentWeather.feels);
-  } else {
+  } //
+  else {
     tft.setFreeFont(FONT_SMALL);
     snprintf(buffer, 50, "No Data Available");
   }

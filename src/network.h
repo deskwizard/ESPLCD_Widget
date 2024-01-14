@@ -7,11 +7,11 @@
 #include <WiFiUdp.h>
 
 // Choose one of these
-#define NTP_LOCAL_DISC
+// #define NTP_LOCAL_DISC
 // #define NTP_LOCAL
 // #define REM_STATIC
 // #define REM_HOSTNAME
-// #define REM_POOL
+#define REM_POOL
 
 #define NTP_LOCAL_PORT 8888 // Local port to listen for UDP packets
 #define NTP_PACKET_SIZE 48

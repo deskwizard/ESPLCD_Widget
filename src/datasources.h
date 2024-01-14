@@ -5,7 +5,7 @@
 #include <HTTPClient.h>
 #include <WiFiClientSecure.h>
 
-#define BUF_SIZE 300 // Buffer size
+#define BUF_SIZE 400 // Buffer size
 
 #define DATA_UPDATE_INTERVAL (MINUTES_TO_MS * 15)
 

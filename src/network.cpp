@@ -8,6 +8,8 @@ extern const char ssid[];
 extern const char password[];
 extern const char deviceHostname[];
 
+extern uint32_t dataUpdateDelay;
+
 ////////////////////////////// NTP //////////////////////////////
 extern bool forceNTPFail; // Debug
 
@@ -117,6 +119,7 @@ void WiFiGotIP(WiFiEvent_t event, WiFiEventInfo_t info) {
 
   getNtpTime();
 
+  dataUpdateDelay = 0;
 
 } // got ip
 
@@ -172,7 +175,7 @@ void handleNTP() {
 
     if (WiFi.status() == WL_CONNECTED) {
       getNtpTime();
-      //updateDataSources();
+      // updateDataSources();
     } else {
       Serial.println("---- WiFi disconnected, attempting connection...");
       connectWiFi();
@@ -358,6 +361,7 @@ void WiFiEvent(WiFiEvent_t event) {
 
 void findLocalNTP() {
 
+#ifdef NTP_LOCAL_DISC
   Serial.println();
   Serial.println("Searching for local NTP server...");
 
@@ -405,9 +409,10 @@ void findLocalNTP() {
     //
     localTimeServerAvailable = true;
   }
-/*
-  Serial.print("Local available: ");
-  Serial.println(localTimeServerAvailable);
-  Serial.println();
-*/  
+  /*
+    Serial.print("Local available: ");
+    Serial.println(localTimeServerAvailable);
+    Serial.println();
+  */
+#endif
 }

@@ -11,8 +11,9 @@ uint32_t unixTime = 1904249932; // Debug
 void handleDataSources();
 void updateDataSources();
 
-char fetchURL[BUF_SIZE]; // Buffer for working on JSON (used by both moon and
-                         // weather)
+char fetchURL[BUF_SIZE]; // Buffer for working on JSON
+
+uint32_t dataUpdateDelay = (MINUTES_TO_MS * 1);
 
 ////////////////////////////// Moon //////////////////////////////
 JsonDocument moonInfo; // Allocate the JSON document
@@ -30,7 +31,7 @@ void handleDataSources() {
 
   uint32_t currentMillis = millis();
   static uint32_t dataUpdateMillis = currentMillis;
-  static uint32_t dataUpdateDelay = (MINUTES_TO_MS * 1);
+  // static uint32_t dataUpdateDelay = (MINUTES_TO_MS * 1);
 
   if ((uint32_t)(currentMillis - dataUpdateMillis) >= dataUpdateDelay) {
 
@@ -39,11 +40,10 @@ void handleDataSources() {
     serialClockDisplay();
 
     if (WiFi.status() == WL_CONNECTED) {
-      updateWeatherData();
       updateMoonData();
+      updateWeatherData();
       dataUpdateDelay = DATA_UPDATE_INTERVAL;
-    }
-    else {
+    } else {
       Serial.println("No network");
       dataUpdateDelay = (MINUTES_TO_MS * 5);
     }
@@ -95,7 +95,7 @@ void updateMoonData() {
   moon.fetchSuccess = moonInfo["Error"]; // 0 = no errors
 
   Serial.println();
-  Serial.println("------ Moon Data ------");
+  Serial.println("----------- Moon Data -----------");
 
   if (!moon.fetchSuccess) {
 
@@ -123,7 +123,6 @@ void updateMoonData() {
     Serial.print("Moon data fetch error: ");
     Serial.println(moon.fetchSuccess);
   }
-  Serial.println();
 }
 
 ////////////////////////////// Weather //////////////////////////////
@@ -159,7 +158,7 @@ void updateWeatherData() {
   currentWeather.fetchSuccess = weatherInfo["error"]; // 0 = no errors
 
   Serial.println();
-  Serial.println("------ Weather Data ------");
+  Serial.println("----------- Weather Data -----------");
 
   if (currentWeather.fetchSuccess == 0) {
 

@@ -5,6 +5,10 @@
 
 void setup() {
 
+  // CS pin for TS, at least the TFT messes up if that's low
+  pinMode(17, OUTPUT);
+  digitalWrite(17, HIGH);
+
   pinMode(LED_DEBUG, OUTPUT);
 
   Wire.begin(32, 33); // SCL - SDA
