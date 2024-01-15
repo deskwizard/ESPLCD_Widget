@@ -205,7 +205,9 @@ void updateWeatherData() {
     Serial.println("%");
     Serial.println();
 
+    updateWeatherIcon(currentWeather.weatherCode);
     updateWeatherDisplay();
+    
   } //
   else {
     Serial.println("Weather fetch error: ");

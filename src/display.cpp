@@ -5,13 +5,18 @@
 #include "datasources.h"
 #include "defines.h"
 
+File pngfile;
+PNG png;
+#define MAX_IMAGE_WIDTH 240 // Adjust for your images
+int16_t xpos = 0;
+int16_t ypos = 0;
+
 #define FONT_SMALL &NotoSans_Regular12pt7b
 #define FONT_MED1 &NotoSans_Regular14pt7b
 #define FONT_MED2 &NotoSans_Regular20pt7b
 #define FONT_TIME &NotoSans_Regular70pt7b
 #define FONT_COLON &NotoSans_Regular42pt7b
 #define FONT_MOON_ICON &MoonPhases20pt7b
-// #define FONT_WEATHER_ICON &qweather_icons20pt7b
 
 TFT_eSPI tft = TFT_eSPI();
 
@@ -27,19 +32,23 @@ void drawStatic() {
   tft.setFreeFont(FONT_COLON);
   tft.drawChar(':', COLON_X_OFFSET, COLON_Y_OFFSET, GFXFF);
 
-  tft.drawFastHLine(0, TOP_LINE_Y - 10, DISP_W, TFT_ORANGE);
-  tft.drawFastHLine(0, TOP_LINE_Y - 11, DISP_W, TFT_ORANGE);
-  tft.drawFastHLine(0, TOP_LINE_Y - 12, DISP_W, TFT_ORANGE);
+  tft.drawFastHLine(0, TOP_LINE_Y, DISP_W, H_LINE_COLOR);
+  tft.drawFastHLine(0, TOP_LINE_Y - 1, DISP_W, H_LINE_COLOR);
+  tft.drawFastHLine(0, TOP_LINE_Y - 2, DISP_W, H_LINE_COLOR);
 
-  tft.drawFastHLine(0, BTM_LINE_Y, DISP_W, TFT_ORANGE);
-  tft.drawFastHLine(0, BTM_LINE_Y + 1, DISP_W, TFT_ORANGE);
-  tft.drawFastHLine(0, BTM_LINE_Y + 2, DISP_W, TFT_ORANGE);
+  tft.drawFastHLine(0, BTM_LINE_Y, DISP_W, H_LINE_COLOR);
+  tft.drawFastHLine(0, BTM_LINE_Y + 1, DISP_W, H_LINE_COLOR);
+  tft.drawFastHLine(0, BTM_LINE_Y + 2, DISP_W, H_LINE_COLOR);
 }
 
 void setupDisplay() {
 
-  // Serial.print("index: ");
-  // Serial.println(moon.index);
+  // Initialise FS
+  if (!FileSys.begin()) {
+    Serial.println("LittleFS initialisation failed!");
+    while (1)
+      yield(); // Stay here twiddling thumbs waiting
+  }
 
   pinMode(TFT_BACKLIGHT, OUTPUT);
   ledcAttachPin(TFT_BACKLIGHT, PWM1_CH);
@@ -59,6 +68,18 @@ void setupDisplay() {
   updateMoonDisplay();
   updateWeatherDisplay();
 
+  /*
+    uint8_t id = 0;
+    while (1) {
+      updateWeatherIcon(id);
+      delay(3000);
+      id++;
+      if (id > 3) {
+        id = 0;
+      }
+    }
+  */
+
   // Serial.println("-------------------------------------------");
   // Serial.println();
 }
@@ -72,21 +93,55 @@ void updateWeatherDisplay() {
   // tft.fillScreen(TFT_BLUE);
   tft.fillScreen(TFT_BLACK);
 
+  // tft.setTextColor(TFT_WHITE, TFT_NAVY);
   tft.setTextColor(TFT_WHITE, TFT_BLACK);
 
   if (currentWeather.fetchSuccess == 0) {
-    tft.setFreeFont(FONT_MED1);
+    tft.setFreeFont(FONT_SMALL);
     snprintf(buffer, 50, "%.0f°C / %.0f°C    %d", currentWeather.temp,
              currentWeather.feels, currentWeather.weatherCode);
   } //
   else {
     tft.setFreeFont(FONT_SMALL);
-    snprintf(buffer, 50, "No Data Available");
+    snprintf(buffer, 50, "No Data");
   }
 
-  tft.drawString(buffer, 0, 5, GFXFF);
+  tft.drawString(buffer, 0, 0, GFXFF);
 
   tft.resetViewport();
+}
+
+void updateWeatherIcon(uint8_t index) {
+
+  char imageName[80];
+
+  // snprintf(imageName, 80, "/weather/small/night/%d.png", index);
+  snprintf(imageName, 80, "/weather/small/day/%d.png", index);
+  Serial.print("image filename: ");
+  Serial.println(imageName);
+
+  xpos = WEA_ICON_X;
+  ypos = WEA_ICON_Y;
+
+  int16_t rc =
+      png.open(imageName, pngOpen, pngClose, pngRead, pngSeek, pngDraw);
+
+  if (rc == PNG_SUCCESS) {
+    tft.startWrite();
+    Serial.printf("image specs: (%d x %d), %d bpp, pixel type: %d\n",
+                  png.getWidth(), png.getHeight(), png.getBpp(),
+                  png.getPixelType());
+
+    if (png.getWidth() > MAX_IMAGE_WIDTH) {
+      Serial.println("Image too wide for allocated line buffer size!");
+    } else {
+      rc = png.decode(NULL, 0);
+      png.close();
+    }
+    tft.endWrite();
+  }
+
+  // updateWeatherImage2(0);
 }
 
 void handleDisplay() {
@@ -286,4 +341,47 @@ void updateDateDisplay() {
   tft.setTextColor(TFT_WHITE, TFT_BLACK);
   tft.drawCentreString(dateString, 160, 0, GFXFF);
   tft.resetViewport();
+}
+
+//=========================================v==========================================
+//                                      pngDraw
+//====================================================================================
+// This next function will be called during decoding of the png file to
+// render each image line to the TFT.  If you use a different TFT library
+// you will need to adapt this function to suit.
+// Callback function to draw pixels to the display
+void pngDraw(PNGDRAW *pDraw) {
+  uint16_t lineBuffer[MAX_IMAGE_WIDTH];
+  png.getLineAsRGB565(pDraw, lineBuffer, PNG_RGB565_BIG_ENDIAN, 0xffffffff);
+  tft.pushImage(xpos, ypos + pDraw->y, pDraw->iWidth, 1, lineBuffer);
+}
+
+// Here are the callback functions that the decPNG library
+// will use to open files, fetch data and close the file.
+
+void *pngOpen(const char *filename, int32_t *size) {
+  Serial.printf("Attempting to open %s\n", filename);
+  pngfile = FileSys.open(filename, "r");
+  *size = pngfile.size();
+  return &pngfile;
+}
+
+void pngClose(void *handle) {
+  File pngfile = *((File *)handle);
+  if (pngfile)
+    pngfile.close();
+}
+
+int32_t pngRead(PNGFILE *page, uint8_t *buffer, int32_t length) {
+  if (!pngfile)
+    return 0;
+  page = page; // Avoid warning
+  return pngfile.read(buffer, length);
+}
+
+int32_t pngSeek(PNGFILE *page, int32_t position) {
+  if (!pngfile)
+    return 0;
+  page = page; // Avoid warning
+  return pngfile.seek(position);
 }
