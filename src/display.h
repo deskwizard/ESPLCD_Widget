@@ -72,6 +72,4 @@ void updateMinutesDisplay();
 void updateDateString();
 void updateDateDisplay();
 
-void neverGive();
-
 #endif

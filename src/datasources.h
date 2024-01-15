@@ -16,6 +16,7 @@
 #define LONG -71.47
 
 struct weatherData {
+  uint8_t weatherCode;
   float temp;
   float feels;
   float precipitation;

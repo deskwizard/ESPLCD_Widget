@@ -18,18 +18,6 @@ TFT_eSPI tft = TFT_eSPI();
 extern time_t localTime;
 extern Timezone myTZ;
 
-/**********************************************************************************/
-#include "never.h" // Image is stored here in an 8 bit array
-#include <PNGdec.h>
-
-PNG png; // PNG decoder instance
-
-#define IMG_MAX_W 240 // Adjust for your images
-#define IMG_X 40
-#define IMG_Y 0
-void pngDraw(PNGDRAW *pDraw);
-/**********************************************************************************/
-
 char dateString[50];
 
 void drawStatic() {
@@ -88,8 +76,8 @@ void updateWeatherDisplay() {
 
   if (currentWeather.fetchSuccess == 0) {
     tft.setFreeFont(FONT_MED1);
-    snprintf(buffer, 50, "%.0f°C / %.0f°C", currentWeather.temp,
-             currentWeather.feels);
+    snprintf(buffer, 50, "%.0f°C / %.0f°C    %d", currentWeather.temp,
+             currentWeather.feels, currentWeather.weatherCode);
   } //
   else {
     tft.setFreeFont(FONT_SMALL);
@@ -298,28 +286,4 @@ void updateDateDisplay() {
   tft.setTextColor(TFT_WHITE, TFT_BLACK);
   tft.drawCentreString(dateString, 160, 0, GFXFF);
   tft.resetViewport();
-}
-
-///////////////////////////////////////////////////////////////////////////////////////////
-void pngDraw(PNGDRAW *pDraw) {
-  uint16_t lineBuffer[IMG_MAX_W];
-  png.getLineAsRGB565(pDraw, lineBuffer, PNG_RGB565_BIG_ENDIAN, 0xffffffff);
-  tft.pushImage(IMG_X, IMG_Y + pDraw->y, pDraw->iWidth, 1, lineBuffer);
-}
-
-void neverGive() {
-  int16_t rc = png.openFLASH((uint8_t *)never, sizeof(never), pngDraw);
-  if (rc == PNG_SUCCESS) {
-    Serial.println("Successfully opened png file");
-    Serial.printf("image specs: (%d x %d), %d bpp, pixel type: %d\n",
-                  png.getWidth(), png.getHeight(), png.getBpp(),
-                  png.getPixelType());
-    tft.startWrite();
-    uint32_t dt = millis();
-    rc = png.decode(NULL, 0);
-    Serial.print(millis() - dt);
-    Serial.println("ms");
-    tft.endWrite();
-    // png.close(); // not needed for memory->memory decode
-  }
 }
