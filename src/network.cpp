@@ -1,6 +1,7 @@
 #include "network.h"
 #include "datasources.h"
 #include "defines.h"
+#include "display.h"
 
 WiFiUDP Udp;
 
@@ -119,7 +120,7 @@ void WiFiGotIP(WiFiEvent_t event, WiFiEventInfo_t info) {
 
   getNtpTime();
 
-  dataUpdateDelay = 1000 * 10; // Wait so it animates a bit.... 
+  dataUpdateDelay = ANIMATION_START_DELAY; // Wait so it animates a bit.... 
 
 } // got ip
 

@@ -30,6 +30,7 @@
 #define PWM_MINIMUM 1100 // PWM is inverted!
 
 #define ANIMATION_MS 150
+#define ANIMATION_START_DELAY (10 * 1000);
 
 // Static items
 #define COLON_X_OFFSET 150

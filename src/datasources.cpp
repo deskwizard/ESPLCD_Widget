@@ -163,7 +163,7 @@ void updateWeatherData() {
   Serial.println();
   Serial.println("----------- Weather Data -----------");
 
-  if (currentWeather.fetchSuccess == 0) {
+  if (currentWeather.fetchSuccess == FETCH_OK) {
 
     currentWeather.temp = weatherInfo["current"]["temperature_2m"];
     currentWeather.feels = weatherInfo["current"]["apparent_temperature"];
@@ -204,9 +204,8 @@ void updateWeatherData() {
     Serial.print(currentWeather.windDir);
     Serial.println("°");
 
-    Serial.print("Daytime: ");
-    Serial.print(currentWeather.isDay);
-    Serial.println("km/h");
+    Serial.print("Day time?: ");
+    Serial.println(currentWeather.isDay);
 
     Serial.print("Relative Humidity: ");
     Serial.print(currentWeather.humidity);

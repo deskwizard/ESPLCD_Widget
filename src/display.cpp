@@ -40,7 +40,7 @@ void setupDisplay() {
 
   // TODO: Preload brightness and adjust ASAP
   for (int8_t x; x <= CDS_AVG_COUNT; x++) {
-    Serial.println(x);
+    // Serial.println(x);
     handleBacklight();
   }
 
@@ -317,11 +317,46 @@ void updateMoonDisplay(uint8_t index) {
 
 void updateMoonWarningDisplay() {
 
-  char imageName[80] = "/other/small/warning.png";
+  char imageName[40];
+
+  Serial.print("moon warning: ");
+  Serial.println(moon.index);
+
+  switch (moon.index -1) {
+
+  case 11:
+  case 17:
+  case 26:
+  case 2:
+    // Clear icon and return?
+    snprintf(imageName, 40, "/other/small/%s", "dsdsds.png");
+    break;
+
+  case 12:
+  case 16:
+  case 27:
+  case 1:
+    snprintf(imageName, 40, "/other/small/%s", "caution.png");
+    break;
+
+  case 13:
+  case 15:
+  case 28:
+  case 0:
+    snprintf(imageName, 40, "/other/small/%s", "warning.png");
+    break;
+
+  case 14:
+  case 29:
+    snprintf(imageName, 40, "/other/small/%s", "alert.png");
+    break;
+
+  default:
+    return; // Nothing to do for the other days
+  }
 
   xpos = MOON_WARNING_X;
   ypos = MOON_WARNING_Y;
-  // snprintf(imageName, 80, "/other/small/%d.png", index);
 
   Serial.print("image filename: ");
   Serial.println(imageName);
