@@ -34,7 +34,7 @@
 #define COLON_Y_OFFSET (VP_TIME_Y + 80)
 #define TOP_LINE_Y (VP_TIME_Y - 13)
 #define BTM_LINE_Y (VP_TIME_Y + 125)
-#define H_LINE_COLOR TFT_OLIVE
+#define H_LINE_COLOR TFT_DARKCYAN
 
 // Viewports
 #define VP_TIME_X 0
@@ -46,7 +46,7 @@
 #define VP_DATE_Y (BTM_LINE_Y + 16)
 #define VP_DATE_W 320
 #define VP_DATE_H 60
-#define DATE_COLOR TFT_DARKCYAN
+#define DATE_COLOR TFT_SKYBLUE
 
 #define VP_MOON_ICON_X 38
 #define VP_MOON_ICON_Y 8
@@ -56,10 +56,10 @@
 #define VP_WEA_X 190
 #define VP_WEA_Y 15
 #define VP_WEA_W 120
-#define VP_WEA_H 20
-#define WEATHER_COLOR TFT_DARKCYAN
-#define WEA_ICON_X (VP_WEA_X - 55);
+#define VP_WEA_H 28
+#define WEA_ICON_X (VP_WEA_X - 52);
 #define WEA_ICON_Y 0
+#define WEATHER_COLOR TFT_SKYBLUE
 
 // The custom font file attached to this sketch must be included
 #define GFXFF 1 // Stock font and GFXFF reference handle

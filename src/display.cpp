@@ -97,7 +97,7 @@ void updateWeatherDisplay() {
   } //
   else {
     tft.setFreeFont(FONT_SMALL);
-    snprintf(buffer, 50, "No Data");
+    snprintf(buffer, 50, "Fetching...");
   }
 
   tft.drawString(buffer, 0, 0, GFXFF);
