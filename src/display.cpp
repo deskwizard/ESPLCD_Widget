@@ -116,8 +116,9 @@ void updateWeatherIcon(uint8_t index) {
 
   char imageName[80];
 
-  // snprintf(imageName, 80, "/weather/small/night/%d.png", index);
-  snprintf(imageName, 80, "/weather/small/day/%d.png", index);
+  // snprintf(imageName, 80, "/weather/small/%d/%d.png", currentWeather.isDay, index);
+  snprintf(imageName, 80, "/weather/small/%d/%d.png", currentWeather.isDay, currentWeather.weatherCode);
+
   Serial.print("image filename: ");
   Serial.println(imageName);
 

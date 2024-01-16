@@ -24,6 +24,7 @@ struct weatherData {
   float windSpeed;
   uint16_t windDir;
   uint8_t humidity;
+  bool isDay;
   uint8_t fetchSuccess = 42; // 0 = no errors
 };
 

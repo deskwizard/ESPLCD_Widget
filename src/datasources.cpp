@@ -133,7 +133,7 @@ void updateWeatherData() {
            "current=",
            "temperature_2m,relative_humidity_2m,apparent_temperature,"
            "precipitation,wind_speed_10m,wind_direction_10m,cloud_cover,"
-           "weather_code");
+           "weather_code,is_day");
 
   /* Reply from API:
     {"latitude":55.6875,"longitude":61.5,"generationtime_ms":0.014066696166992188,"utc_offset_seconds":0,"timezone":"GMT","timezone_abbreviation":"GMT","elevation":213.0,"current_units":{"time":"unixtime","interval":"seconds","temperature_2m":"°C"},"current":{"time":1705112100,"interval":900,"temperature_2m":-14.4}}
@@ -171,6 +171,8 @@ void updateWeatherData() {
     currentWeather.windDir = weatherInfo["current"]["wind_direction_10m"];
     currentWeather.humidity = weatherInfo["current"]["relative_humidity_2m"];
     currentWeather.weatherCode = weatherInfo["current"]["weather_code"];
+    currentWeather.isDay = weatherInfo["current"]["is_day"];
+    
 
     Serial.print("Weather Code: ");
     Serial.print(currentWeather.weatherCode);
@@ -199,6 +201,10 @@ void updateWeatherData() {
     Serial.print("Wind Direction: ");
     Serial.print(currentWeather.windDir);
     Serial.println("°");
+
+    Serial.print("Daytime: ");
+    Serial.print(currentWeather.isDay);
+    Serial.println("km/h");
 
     Serial.print("Relative Humidity: ");
     Serial.print(currentWeather.humidity);
