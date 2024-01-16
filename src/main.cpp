@@ -18,14 +18,19 @@ void setup() {
 
   setupTime();
   setupDisplay();
+
+#ifndef NO_NET
   setupWiFi();
+#endif
 }
 
 void loop() {
 
+#ifndef NO_NET
   handleWiFi();
   handleNTP();
 
+#endif
   handleDataSources();
 
   handleDisplay();
