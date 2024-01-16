@@ -8,7 +8,6 @@
 #include <TimeLib.h>
 #include <Timezone.h>
 
-#include "fonts/MoonPhases20pt7b.h"
 #include "fonts/NotoSans_Regular12pt7b.h"
 #include "fonts/NotoSans_Regular14pt7b.h"
 #include "fonts/NotoSans_Regular16pt7b.h"
@@ -33,37 +32,32 @@
 // Static items
 #define COLON_X_OFFSET 150
 #define COLON_Y_OFFSET (VP_TIME_Y + 80)
-#define H_LINE_COLOR TFT_CYAN
+#define H_LINE_COLOR TFT_DARKCYAN
 #define TOP_LINE_Y (VP_TIME_Y - 13)
 #define BTM_LINE_Y (VP_TIME_Y + 125)
 
 // Viewports
 #define VP_TIME_X 0
-#define VP_TIME_Y 70
+#define VP_TIME_Y 68
 #define VP_TIME_W 75
 #define VP_TIME_H 110
+#define TIME_COLOR TFT_DARKGREEN
 
 #define VP_DATE_Y (BTM_LINE_Y + 16)
 #define VP_DATE_W 320
 #define VP_DATE_H 60
+#define DATE_COLOR TFT_DARKCYAN//TFT_YELLOW
 
-#define VP_MOON_ICON_X 5
+#define VP_MOON_ICON_X 38
 #define VP_MOON_ICON_Y 8
 #define VP_MOON_ICON_W 40
 #define VP_MOON_ICON_H 38
-/*
-#define VP_WEA_X 200
-#define VP_WEA_Y 16
-#define VP_WEA_W 120
-#define VP_WEA_H 20
-#define WEA_ICON_X (VP_WEA_X - 55);
-#define WEA_ICON_Y 0
-*/
 
-#define VP_WEA_X 200
-#define VP_WEA_Y 16
+#define VP_WEA_X 190
+#define VP_WEA_Y 15
 #define VP_WEA_W 120
 #define VP_WEA_H 20
+#define WEATHER_COLOR TFT_DARKCYAN
 #define WEA_ICON_X (VP_WEA_X - 55);
 #define WEA_ICON_Y 0
 

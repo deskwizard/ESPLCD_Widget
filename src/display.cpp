@@ -1,13 +1,15 @@
 // https://www.codeproject.com/Articles/5336116/Img2Cpp-Create-Cplusplus-Headers-for-Embedding-Ima
 // https://notisrac.github.io/FileToCArray/
 
+
+/******** WARNING: INCLUDE ORDER MATTERS !!! ********/
 #include "display.h"
 #include "datasources.h"
 #include "defines.h"
 
+#define MAX_IMAGE_WIDTH 240 // Adjust for your images
 File pngfile;
 PNG png;
-#define MAX_IMAGE_WIDTH 240 // Adjust for your images
 int16_t xpos = 0;
 int16_t ypos = 0;
 
@@ -16,7 +18,6 @@ int16_t ypos = 0;
 #define FONT_MED2 &NotoSans_Regular20pt7b
 #define FONT_TIME &NotoSans_Regular70pt7b
 #define FONT_COLON &NotoSans_Regular42pt7b
-#define FONT_MOON_ICON &MoonPhases20pt7b
 
 TFT_eSPI tft = TFT_eSPI();
 
@@ -28,7 +29,7 @@ char dateString[50];
 void drawStatic() {
 
   // The ':' in the middle
-  tft.setTextColor(TFT_GREEN, TFT_BLACK);
+  tft.setTextColor(TIME_COLOR, TFT_BLACK);
   tft.setFreeFont(FONT_COLON);
   tft.drawChar(':', COLON_X_OFFSET, COLON_Y_OFFSET, GFXFF);
 
@@ -93,8 +94,8 @@ void updateWeatherDisplay() {
   // tft.fillScreen(TFT_BLUE);
   tft.fillScreen(TFT_BLACK);
 
-  // tft.setTextColor(TFT_WHITE, TFT_NAVY);
-  tft.setTextColor(TFT_WHITE, TFT_BLACK);
+  // tft.setTextColor(WEATHER_COLOR, TFT_NAVY);
+  tft.setTextColor(WEATHER_COLOR, TFT_BLACK);
 
   if (currentWeather.fetchSuccess == 0) {
     tft.setFreeFont(FONT_SMALL);
@@ -140,8 +141,6 @@ void updateWeatherIcon(uint8_t index) {
     }
     tft.endWrite();
   }
-
-  // updateWeatherImage2(0);
 }
 
 void handleDisplay() {
@@ -220,8 +219,8 @@ void handleBacklight() {
     // Serial.println();
   }
 }
-
-void updateMoonDisplay() {
+/*
+void updateMoonDisplay1() {
   // Serial.println("updateMoonDisplay() called.");
   //  Serial.println(moonIndex);
 
@@ -238,12 +237,44 @@ void updateMoonDisplay() {
   } //
   else {
     tft.setTextColor(TFT_WHITE, TFT_BLACK);
-    tft.setFreeFont(FONT_MOON_ICON);
+    tft.setFreeFont(FONT_MED2);
     tft.drawChar(moonMap[moon.index], 0, 32, GFXFF);
     tft.drawCircle(19, 18, 15, TFT_WHITE);
     tft.drawCircle(19, 18, 16, TFT_WHITE);
   }
   tft.resetViewport();
+}
+*/
+void updateMoonDisplay() {
+
+  char imageName[80];
+  // snprintf(imageName, 80, "/weather/small/night/%d.png", index);
+  snprintf(imageName, 80, "/moon/small/%d.png", moon.index);
+
+  Serial.print("image filename: ");
+  Serial.println(imageName);
+
+  xpos = VP_MOON_ICON_X;
+  ypos = VP_MOON_ICON_Y;
+
+  int16_t rc =
+      png.open(imageName, pngOpen, pngClose, pngRead, pngSeek, pngDraw);
+
+  if (rc == PNG_SUCCESS) {
+    tft.startWrite();
+
+    Serial.printf("image specs: (%d x %d), %d bpp, pixel type: %d\n",
+                  png.getWidth(), png.getHeight(), png.getBpp(),
+                  png.getPixelType());
+
+    if (png.getWidth() > MAX_IMAGE_WIDTH) {
+      Serial.println("Image too wide for allocated line buffer size!");
+    } else {
+      rc = png.decode(NULL, 0);
+      png.close();
+    }
+    tft.endWrite();
+  }
 }
 
 void updateTimeDisplay() {
@@ -261,7 +292,7 @@ void updateHoursDisplay() {
   tens = (tens / 10) % 10;
 
   tft.setFreeFont(FONT_TIME);
-  tft.setTextColor(TFT_GREEN, TFT_BLACK);
+  tft.setTextColor(TIME_COLOR, TFT_BLACK);
 
   // TViewports
   tft.setViewport(VP_TIME_X, VP_TIME_Y, VP_TIME_W, VP_TIME_H);
@@ -290,7 +321,7 @@ void updateMinutesDisplay() {
 
   tft.setFreeFont(FONT_TIME);
 
-  tft.setTextColor(TFT_GREEN, TFT_BLACK);
+  tft.setTextColor(TIME_COLOR, TFT_BLACK);
 
   tft.setViewport(DISP_W - (VP_TIME_W * 2), VP_TIME_Y, VP_TIME_W, VP_TIME_H);
   tft.drawNumber(tens, 0, 0, GFXFF);
@@ -338,7 +369,7 @@ void updateDateDisplay() {
   tft.setFreeFont(FONT_SMALL);
   tft.setViewport(0, VP_DATE_Y, VP_DATE_W, VP_DATE_H);
   tft.fillScreen(TFT_BLACK);
-  tft.setTextColor(TFT_WHITE, TFT_BLACK);
+  tft.setTextColor(DATE_COLOR, TFT_BLACK);
   tft.drawCentreString(dateString, 160, 0, GFXFF);
   tft.resetViewport();
 }
