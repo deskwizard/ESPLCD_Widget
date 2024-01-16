@@ -27,7 +27,7 @@
 #define CDS_PIN 34
 #define CDS_AVG_COUNT 50
 #define CDS_READ_RATE 50
-#define PWM_MINIMUM 1100 // PWM is inverted!
+#define PWM_MINIMUM 950 // PWM is inverted!
 
 #define ANIMATION_MS 150
 #define ANIMATION_START_DELAY (10 * 1000);
@@ -58,20 +58,20 @@
 #define MOON_WARNING_X 5
 #define MOON_WARNING_Y 16
 
-#define VP_WEA_X 190
+#define VP_WEA_X 200
 #define VP_WEA_Y 15
 #define VP_WEA_W 120
 #define VP_WEA_H 28
-#define WEA_ICON_X (VP_WEA_X - 52);
+#define VP_WEA_ICON_X (VP_WEA_X - 65)
+#define VP_WEA_ICON_Y 0
+#define VP_WEA_ICON_H 50
+#define VP_WEA_ICON_W 65
+#define WEA_ICON_X 0
 #define WEA_ICON_Y 0
 #define WEATHER_COLOR TFT_SKYBLUE
 
 // The custom font file attached to this sketch must be included
 #define GFXFF 1 // Stock font and GFXFF reference handle
-
-const uint8_t moonMap[29] = {'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j',
-                             'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't',
-                             'u', 'v', 'w', 'x', 'y', 'z', 'A', 'B'};
 
 void setupDisplay();
 void handleDisplay();
@@ -83,6 +83,7 @@ void updateWeatherIcon();
 void updateMoonDisplay(uint8_t index);
 void updateMoonWarningDisplay();
 void updateDateString();
+void drawColon();
 void updateTimeDisplay(); // Updates both hours and minutes
 void updateHoursDisplay();
 void updateMinutesDisplay();

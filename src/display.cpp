@@ -6,7 +6,7 @@
 #include "datasources.h"
 #include "defines.h"
 
-#define MAX_IMAGE_WIDTH 240 // Adjust for your images
+#define MAX_IMAGE_WIDTH 300 // Adjust for your images
 File pngfile;
 PNG png;
 int16_t xpos = 0;
@@ -24,6 +24,94 @@ extern time_t localTime;
 extern Timezone myTZ;
 
 char dateString[50];
+
+#define beat_delay 400
+#define WEATHER_ANIM_FR 75
+
+void animateWeather() {
+
+  char imageName1[80] = "/weather/small/sun.png";
+  char imageName2[80] = "/weather/small/moon.png";
+
+  Serial.print("image filename: ");
+  Serial.print(imageName1);
+
+  // Reset image display location
+  xpos = 0;
+  ypos = 0;
+
+  // Load sun
+  int16_t rc =
+      png.open(imageName1, pngOpen, pngClose, pngRead, pngSeek, pngDraw);
+
+  if (rc == PNG_SUCCESS) {
+    Serial.printf(" -  Image specs: (%d x %d), %d bpp, pixel type: %d\n",
+                  png.getWidth(), png.getHeight(), png.getBpp(),
+                  png.getPixelType());
+
+    if (png.getWidth() > MAX_IMAGE_WIDTH) {
+      Serial.println("Image too wide for allocated line buffer size!");
+      while (1)
+        ;
+    }
+  }
+
+  // Enter viewport
+  tft.setViewport(VP_WEA_ICON_X, VP_WEA_ICON_Y, VP_WEA_ICON_W, VP_WEA_ICON_H);
+  // tft.fillScreen(TFT_BLUE);
+
+  // move it around
+  for (uint8_t x = xpos; x <= 70; x = (x + 2)) {
+    // Serial.println(x);
+    tft.startWrite();
+    rc = png.decode(NULL, 0);
+    tft.endWrite();
+    xpos = x;
+    delay(WEATHER_ANIM_FR);
+  }
+  png.close();
+
+  Serial.println("------- Done with the sun, now for the moon! -------");
+
+  // Reset image display location
+  xpos = 0;
+  ypos = 0;
+
+  Serial.print("image filename: ");
+  Serial.print(imageName2);
+
+  // Load moon
+  rc = png.open(imageName2, pngOpen, pngClose, pngRead, pngSeek, pngDraw);
+
+  if (rc == PNG_SUCCESS) {
+    Serial.printf(" -  Image specs: (%d x %d), %d bpp, pixel type: %d\n",
+                  png.getWidth(), png.getHeight(), png.getBpp(),
+                  png.getPixelType());
+
+    if (png.getWidth() > MAX_IMAGE_WIDTH) {
+      Serial.println("Image too wide for allocated line buffer size!");
+      while (1)
+        ;
+    }
+  }
+
+  // Enter viewport
+  tft.setViewport(VP_WEA_ICON_X, VP_WEA_ICON_Y, VP_WEA_ICON_W, VP_WEA_ICON_H);
+  // tft.fillScreen(TFT_BLUE);
+
+  // move it around
+  for (uint8_t x = xpos; x <= 70; x = (x + 2)) {
+    // Serial.println(x);
+    tft.startWrite();
+    rc = png.decode(NULL, 0);
+    tft.endWrite();
+    xpos = x;
+    delay(WEATHER_ANIM_FR);
+  }
+  png.close();
+
+  // start over
+}
 
 void setupDisplay() {
 
@@ -57,48 +145,130 @@ void setupDisplay() {
   updateDateString();
   updateDateDisplay();
 
-  // uint8_t id = 0;
   // delay(1000);
-  /*
-  while (id < 4) {
-    currentWeather.weatherCode = id;
-    updateWeatherIcon();
-    delay(1000);
-    id++;
+
+#ifdef TEST_DISPLAY
+
+  while (1) {
+    animateWeather();
   }
 
-  id = 71;
-  while (id < 79) {
-    currentWeather.weatherCode = id;
-    updateWeatherIcon();
-    delay(1000);
-    id = id + 2;
-  }
+  uint8_t id = 0;
 
-  id = 0;
-  currentWeather.isDay = 1;
-  while (id < 4) {
-    currentWeather.weatherCode = id;
-    updateWeatherIcon();
-    delay(1000);
-    id++;
-  }
- */
-  /*
-    id = 0;
-    // while (id < 30) {
-    while (1) {
-      moon.index = id;
-      updateMoonDisplay(id);
-      delay(80);
-      id++;
-      if (id == 30) {
-        id = 0;
-      }
+  char imageName2[80] = "/weather/small/sun.png";
+  char imageName1[80] = "/weather/small/moon.png";
+
+  Serial.print("image filename: ");
+  Serial.print(imageName1);
+
+  int16_t rc =
+      png.open(imageName1, pngOpen, pngClose, pngRead, pngSeek, pngDraw);
+
+  if (rc == PNG_SUCCESS) {
+    // tft.startWrite();
+    Serial.printf(" -  Image specs: (%d x %d), %d bpp, pixel type: %d\n",
+                  png.getWidth(), png.getHeight(), png.getBpp(),
+                  png.getPixelType());
+
+    if (png.getWidth() > MAX_IMAGE_WIDTH) {
+      Serial.println("Image too wide for allocated line buffer size!");
+      while (1)
+        ;
     }
-    delay(3000);
-  */
+  }
 
+  xpos = 0;
+  ypos = 0;
+
+  while (1) {
+
+    char buffer[50];
+
+    tft.setViewport(VP_WEA_ICON_X, VP_WEA_ICON_Y, VP_WEA_ICON_W, VP_WEA_ICON_H);
+    tft.fillScreen(TFT_BLUE);
+
+    while (1) {
+      /*
+            tft.startWrite();
+            rc = png.decode(NULL, 0);
+            tft.endWrite();
+       */
+      for (uint8_t x = xpos; x <= 60; x = (x + 2)) {
+        // Serial.println(x);
+        tft.startWrite();
+        rc = png.decode(NULL, 0);
+        tft.endWrite();
+        xpos = x;
+        /*
+                tft.startWrite();
+                rc = png.decode(NULL, 0);
+                tft.endWrite();
+                 */
+        delay(beat_delay);
+      }
+      png.close();
+    }
+
+    // CLOSE PNG WHEN DONE!
+
+    tft.resetViewport();
+
+    /*
+        id = 0;
+        while (id < 30) {
+          moon.index = id;
+          updateMoonDisplay(id);
+          delay(100);
+          id++;
+        }
+
+            moon.index = 1;
+        updateMoonWarningDisplay();
+        delay(500);
+        moon.index = 0;
+        updateMoonWarningDisplay();
+        delay(500);
+        moon.index = 29;
+        updateMoonWarningDisplay();
+        delay(500);
+        moon.index = 2;
+        updateMoonWarningDisplay();
+        delay(500);
+
+         */
+
+    /*
+    id = 0;
+    currentWeather.isDay = 0;
+    while (id < 4) {
+      currentWeather.weatherCode = id;
+      updateWeatherIcon();
+      delay(beat_delay);
+      id++;
+    }
+
+    id = 71;
+    while (id < 79) {
+      currentWeather.weatherCode = id;
+      updateWeatherIcon();
+      delay(beat_delay);
+      id = id + 2;
+    }
+
+    id = 0;
+    currentWeather.isDay = 1;
+    while (id < 4) {
+      currentWeather.weatherCode = id;
+      updateWeatherIcon();
+      delay(beat_delay);
+      id++;
+    }
+*/
+    // delay(3000);
+    // Serial.println("-------------------------------------------");
+    Serial.println();
+  }
+#endif
   // Serial.println("-------------------------------------------");
   // Serial.println();
 }
@@ -128,7 +298,6 @@ void handleDisplay() {
         if (hour(localTime) == 0) {
           updateDateString();
           updateDateDisplay();
-          // updateMoonDisplay(moon.index);
         }
       }
     }
@@ -162,11 +331,6 @@ void animate() {
 
 void drawStatic() {
 
-  // The ':' in the middle
-  tft.setTextColor(TIME_COLOR, TFT_BLACK);
-  tft.setFreeFont(FONT_COLON);
-  tft.drawChar(':', COLON_X_OFFSET, COLON_Y_OFFSET, GFXFF);
-
   tft.drawFastHLine(0, TOP_LINE_Y, DISP_W, H_LINE_COLOR);
   tft.drawFastHLine(0, TOP_LINE_Y - 1, DISP_W, H_LINE_COLOR);
   tft.drawFastHLine(0, TOP_LINE_Y - 2, DISP_W, H_LINE_COLOR);
@@ -174,6 +338,8 @@ void drawStatic() {
   tft.drawFastHLine(0, BTM_LINE_Y, DISP_W, H_LINE_COLOR);
   tft.drawFastHLine(0, BTM_LINE_Y + 1, DISP_W, H_LINE_COLOR);
   tft.drawFastHLine(0, BTM_LINE_Y + 2, DISP_W, H_LINE_COLOR);
+
+  drawColon();
 }
 
 void updateWeatherDisplay() {
@@ -216,6 +382,9 @@ void updateWeatherIcon() {
   xpos = WEA_ICON_X;
   ypos = WEA_ICON_Y;
 
+  tft.setViewport(VP_WEA_ICON_X, VP_WEA_ICON_Y, VP_WEA_ICON_W, VP_WEA_ICON_H);
+  // tft.fillScreen(TFT_BLUE);
+
   int16_t rc =
       png.open(imageName, pngOpen, pngClose, pngRead, pngSeek, pngDraw);
 
@@ -233,6 +402,8 @@ void updateWeatherIcon() {
     }
     tft.endWrite();
   }
+
+  tft.resetViewport();
 }
 
 void handleBacklight() {
@@ -322,14 +493,15 @@ void updateMoonWarningDisplay() {
   Serial.print("moon warning: ");
   Serial.println(moon.index);
 
-  switch (moon.index -1) {
+  switch (moon.index) {
 
   case 11:
   case 17:
   case 26:
   case 2:
-    // Clear icon and return?
-    snprintf(imageName, 40, "/other/small/%s", "dsdsds.png");
+    // Clear icon and return
+    tft.fillRect(2, 10, 30, 30, TFT_BLACK);
+    return;
     break;
 
   case 12:
@@ -381,6 +553,12 @@ void updateMoonWarningDisplay() {
   }
 }
 
+void drawColon() {
+  // The ':' in the middle
+  tft.setTextColor(TIME_COLOR, TFT_BLACK);
+  tft.setFreeFont(FONT_COLON);
+  tft.drawChar(':', COLON_X_OFFSET, COLON_Y_OFFSET, GFXFF);
+}
 void updateTimeDisplay() {
   updateHoursDisplay();
   updateMinutesDisplay();
@@ -404,7 +582,7 @@ void updateHoursDisplay() {
     tft.drawNumber(tens, 0, 0, GFXFF);
   } //
   else {
-    tft.fillScreen(TFT_BLACK);
+    // tft.fillScreen(TFT_BLACK);
   }
   tft.resetViewport();
 
