@@ -32,21 +32,21 @@
 // Static items
 #define COLON_X_OFFSET 150
 #define COLON_Y_OFFSET (VP_TIME_Y + 80)
-#define H_LINE_COLOR TFT_DARKCYAN
 #define TOP_LINE_Y (VP_TIME_Y - 13)
 #define BTM_LINE_Y (VP_TIME_Y + 125)
+#define H_LINE_COLOR TFT_OLIVE
 
 // Viewports
 #define VP_TIME_X 0
 #define VP_TIME_Y 68
 #define VP_TIME_W 75
 #define VP_TIME_H 110
-#define TIME_COLOR TFT_DARKGREEN
+#define TIME_COLOR TFT_ORANGE
 
 #define VP_DATE_Y (BTM_LINE_Y + 16)
 #define VP_DATE_W 320
 #define VP_DATE_H 60
-#define DATE_COLOR TFT_DARKCYAN//TFT_YELLOW
+#define DATE_COLOR TFT_DARKCYAN
 
 #define VP_MOON_ICON_X 38
 #define VP_MOON_ICON_Y 8
@@ -73,7 +73,7 @@ void handleDisplay();
 void handleBacklight();
 void drawStatic();
 void updateWeatherDisplay();
-void updateWeatherIcon(uint8_t index);
+void updateWeatherIcon();
 void updateMoonDisplay();
 void updateDateString();
 void updateTimeDisplay(); // Updates both hours and minutes

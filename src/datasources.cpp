@@ -211,7 +211,7 @@ void updateWeatherData() {
     Serial.println("%");
     Serial.println();
 
-    updateWeatherIcon(currentWeather.weatherCode);
+    updateWeatherIcon();
     updateWeatherDisplay();
     
   } //

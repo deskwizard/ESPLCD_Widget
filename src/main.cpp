@@ -30,7 +30,7 @@ void loop() {
 
   handleDisplay();
 
-  blink();
+  // blink();
   handleSerial();
 }
 

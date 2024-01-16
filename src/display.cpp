@@ -1,7 +1,6 @@
 // https://www.codeproject.com/Articles/5336116/Img2Cpp-Create-Cplusplus-Headers-for-Embedding-Ima
 // https://notisrac.github.io/FileToCArray/
 
-
 /******** WARNING: INCLUDE ORDER MATTERS !!! ********/
 #include "display.h"
 #include "datasources.h"
@@ -26,22 +25,6 @@ extern Timezone myTZ;
 
 char dateString[50];
 
-void drawStatic() {
-
-  // The ':' in the middle
-  tft.setTextColor(TIME_COLOR, TFT_BLACK);
-  tft.setFreeFont(FONT_COLON);
-  tft.drawChar(':', COLON_X_OFFSET, COLON_Y_OFFSET, GFXFF);
-
-  tft.drawFastHLine(0, TOP_LINE_Y, DISP_W, H_LINE_COLOR);
-  tft.drawFastHLine(0, TOP_LINE_Y - 1, DISP_W, H_LINE_COLOR);
-  tft.drawFastHLine(0, TOP_LINE_Y - 2, DISP_W, H_LINE_COLOR);
-
-  tft.drawFastHLine(0, BTM_LINE_Y, DISP_W, H_LINE_COLOR);
-  tft.drawFastHLine(0, BTM_LINE_Y + 1, DISP_W, H_LINE_COLOR);
-  tft.drawFastHLine(0, BTM_LINE_Y + 2, DISP_W, H_LINE_COLOR);
-}
-
 void setupDisplay() {
 
   // Initialise FS
@@ -54,6 +37,12 @@ void setupDisplay() {
   pinMode(TFT_BACKLIGHT, OUTPUT);
   ledcAttachPin(TFT_BACKLIGHT, PWM1_CH);
   ledcSetup(PWM1_CH, PWM1_FREQ, PWM1_RES);
+
+  // TODO: Preload brightness and adjust ASAP
+  for (int8_t x; x <= CDS_AVG_COUNT; x++) {
+    Serial.println(x);
+    handleBacklight();
+  }
 
   tft.begin();
   tft.setRotation(3);
@@ -69,20 +58,24 @@ void setupDisplay() {
   updateMoonDisplay();
   updateWeatherDisplay();
 
-  /*
-    uint8_t id = 0;
-    while (1) {
-      updateWeatherIcon(id);
-      delay(3000);
-      id++;
-      if (id > 3) {
-        id = 0;
-      }
-    }
-  */
-
   // Serial.println("-------------------------------------------");
   // Serial.println();
+}
+
+void drawStatic() {
+
+  // The ':' in the middle
+  tft.setTextColor(TIME_COLOR, TFT_BLACK);
+  tft.setFreeFont(FONT_COLON);
+  tft.drawChar(':', COLON_X_OFFSET, COLON_Y_OFFSET, GFXFF);
+
+  tft.drawFastHLine(0, TOP_LINE_Y, DISP_W, H_LINE_COLOR);
+  tft.drawFastHLine(0, TOP_LINE_Y - 1, DISP_W, H_LINE_COLOR);
+  tft.drawFastHLine(0, TOP_LINE_Y - 2, DISP_W, H_LINE_COLOR);
+
+  tft.drawFastHLine(0, BTM_LINE_Y, DISP_W, H_LINE_COLOR);
+  tft.drawFastHLine(0, BTM_LINE_Y + 1, DISP_W, H_LINE_COLOR);
+  tft.drawFastHLine(0, BTM_LINE_Y + 2, DISP_W, H_LINE_COLOR);
 }
 
 void updateWeatherDisplay() {
@@ -112,12 +105,12 @@ void updateWeatherDisplay() {
   tft.resetViewport();
 }
 
-void updateWeatherIcon(uint8_t index) {
+void updateWeatherIcon() {
 
   char imageName[80];
 
-  // snprintf(imageName, 80, "/weather/small/%d/%d.png", currentWeather.isDay, index);
-  snprintf(imageName, 80, "/weather/small/%d/%d.png", currentWeather.isDay, currentWeather.weatherCode);
+  snprintf(imageName, 80, "/weather/small/%d/%d.png", currentWeather.isDay,
+           currentWeather.weatherCode);
 
   Serial.print("image filename: ");
   Serial.println(imageName);
