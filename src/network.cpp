@@ -119,7 +119,7 @@ void WiFiGotIP(WiFiEvent_t event, WiFiEventInfo_t info) {
 
   getNtpTime();
 
-  dataUpdateDelay = 0;
+  dataUpdateDelay = 1000 * 10; // Wait so it animates a bit.... 
 
 } // got ip
 

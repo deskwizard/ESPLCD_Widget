@@ -27,7 +27,9 @@
 #define CDS_PIN 34
 #define CDS_AVG_COUNT 50
 #define CDS_READ_RATE 50
-#define PWM_MINIMUM 1000 // PWM is inverted!
+#define PWM_MINIMUM 1100 // PWM is inverted!
+
+#define ANIMATION_MS 150
 
 // Static items
 #define COLON_X_OFFSET 150
@@ -41,14 +43,14 @@
 #define VP_TIME_Y 68
 #define VP_TIME_W 75
 #define VP_TIME_H 110
-#define TIME_COLOR TFT_ORANGE
+#define TIME_COLOR TFT_GOLD
 
 #define VP_DATE_Y (BTM_LINE_Y + 16)
 #define VP_DATE_W 320
 #define VP_DATE_H 60
 #define DATE_COLOR TFT_SKYBLUE
 
-#define VP_MOON_ICON_X 38
+#define VP_MOON_ICON_X 45
 #define VP_MOON_ICON_Y 8
 #define VP_MOON_ICON_W 40
 #define VP_MOON_ICON_H 38
@@ -70,11 +72,12 @@ const uint8_t moonMap[29] = {'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j',
 
 void setupDisplay();
 void handleDisplay();
+void animate();
 void handleBacklight();
 void drawStatic();
 void updateWeatherDisplay();
 void updateWeatherIcon();
-void updateMoonDisplay();
+void updateMoonDisplay(uint8_t index);
 void updateDateString();
 void updateTimeDisplay(); // Updates both hours and minutes
 void updateHoursDisplay();

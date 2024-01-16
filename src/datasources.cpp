@@ -65,6 +65,8 @@ void updateDataSources() {
 ////////////////////////////// Moon //////////////////////////////
 void updateMoonData() {
 
+  updateMoonDisplay(29);
+
   client.setInsecure();
 
   snprintf(fetchURL, BUF_SIZE, URL_BASE_MOON "%u", unixTime);
@@ -117,7 +119,7 @@ void updateMoonData() {
     Serial.print("Image index: ");
     Serial.println(moon.index);
 
-    updateMoonDisplay();
+    updateMoonDisplay(moon.index);
   } //
   else {
     Serial.print("Moon data fetch error: ");

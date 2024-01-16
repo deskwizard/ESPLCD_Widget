@@ -38,7 +38,7 @@ struct moonData {
   char phase[40];
   float age;
   float illumination;
-  uint8_t index = 30; // use 30 for warning?
+  uint8_t index;
   uint8_t fetchSuccess = 42; // 0 = no errors
 };
 extern struct moonData moon;

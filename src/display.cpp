@@ -31,7 +31,7 @@ void setupDisplay() {
   if (!FileSys.begin()) {
     Serial.println("LittleFS initialisation failed!");
     while (1)
-      yield(); // Stay here twiddling thumbs waiting
+      yield();
   }
 
   pinMode(TFT_BACKLIGHT, OUTPUT);
@@ -51,15 +51,110 @@ void setupDisplay() {
   // tft.fillScreen(TFT_PURPLE);
 
   drawStatic();
-
+  updateMoonDisplay(29);
+  updateWeatherDisplay();
   updateTimeDisplay();
   updateDateString();
   updateDateDisplay();
-  updateMoonDisplay();
-  updateWeatherDisplay();
+
+  // uint8_t id = 0;
+  // delay(1000);
+  /*
+  while (id < 4) {
+    currentWeather.weatherCode = id;
+    updateWeatherIcon();
+    delay(1000);
+    id++;
+  }
+
+  id = 71;
+  while (id < 79) {
+    currentWeather.weatherCode = id;
+    updateWeatherIcon();
+    delay(1000);
+    id = id + 2;
+  }
+
+  id = 0;
+  currentWeather.isDay = 1;
+  while (id < 4) {
+    currentWeather.weatherCode = id;
+    updateWeatherIcon();
+    delay(1000);
+    id++;
+  }
+ */
+  /*
+    id = 0;
+    // while (id < 30) {
+    while (1) {
+      moon.index = id;
+      updateMoonDisplay(id);
+      delay(80);
+      id++;
+      if (id == 30) {
+        id = 0;
+      }
+    }
+    delay(3000);
+  */
 
   // Serial.println("-------------------------------------------");
   // Serial.println();
+}
+
+void handleDisplay() {
+
+  static uint8_t previousMinute = 0;
+
+  if (timeStatus() != timeNotSet) {
+
+    localTime = myTZ.toLocal(now());
+
+    if (minute(localTime) != previousMinute) {
+
+      serialClockDisplay();
+
+      // Serial.print("---- M: ");
+      // Serial.println(minute(localTime));
+
+      updateMinutesDisplay();
+      previousMinute = minute(localTime);
+
+      if (minute(localTime) == 0) {
+
+        updateHoursDisplay();
+
+        if (hour(localTime) == 0) {
+          updateDateString();
+          updateDateDisplay();
+          // updateMoonDisplay(moon.index);
+        }
+      }
+    }
+  } // Time set
+
+  handleBacklight();
+  animate();
+}
+
+void animate() {
+
+  uint32_t currentMillis = millis();
+  static uint32_t previousMillis = 0;
+  static uint8_t id;
+
+  if (((uint32_t)(currentMillis - previousMillis) >= ANIMATION_MS) &&
+      moon.fetchSuccess == 42) {
+
+    updateMoonDisplay(id);
+    id++;
+    if (id == 30) {
+      id = 0;
+    }
+
+    previousMillis = currentMillis;
+  }
 }
 
 void drawStatic() {
@@ -137,40 +232,6 @@ void updateWeatherIcon() {
   }
 }
 
-void handleDisplay() {
-
-  static uint8_t previousMinute = 0;
-
-  if (timeStatus() != timeNotSet) {
-
-    localTime = myTZ.toLocal(now());
-
-    if (minute(localTime) != previousMinute) {
-
-      serialClockDisplay();
-
-      // Serial.print("---- M: ");
-      // Serial.println(minute(localTime));
-
-      updateMinutesDisplay();
-      previousMinute = minute(localTime);
-
-      if (minute(localTime) == 0) {
-
-        updateHoursDisplay();
-
-        if (hour(localTime) == 0) {
-          updateDateString();
-          updateDateDisplay();
-          updateMoonDisplay();
-        }
-      }
-    }
-  } // Time set
-
-  handleBacklight();
-}
-
 void handleBacklight() {
 
   uint16_t outputPWMValue;
@@ -239,17 +300,16 @@ void updateMoonDisplay1() {
   tft.resetViewport();
 }
 */
-void updateMoonDisplay() {
+void updateMoonDisplay(uint8_t index) {
 
   char imageName[80];
-  // snprintf(imageName, 80, "/weather/small/night/%d.png", index);
-  snprintf(imageName, 80, "/moon/small/%d.png", moon.index);
-
-  Serial.print("image filename: ");
-  Serial.println(imageName);
 
   xpos = VP_MOON_ICON_X;
   ypos = VP_MOON_ICON_Y;
+  snprintf(imageName, 80, "/moon/small/%d.png", index);
+
+  Serial.print("image filename: ");
+  Serial.println(imageName);
 
   int16_t rc =
       png.open(imageName, pngOpen, pngClose, pngRead, pngSeek, pngDraw);
