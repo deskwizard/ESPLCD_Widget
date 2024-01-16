@@ -13,3 +13,5 @@
     - Extra Info Weather
     - Calendar
 
+- Text centering
+

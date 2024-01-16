@@ -2,6 +2,7 @@
 #define _DEFINES_H_
 
 //#define NO_NET
+//#define NO_ANIM
 
 #include <Arduino.h>
 #include <Wire.h>

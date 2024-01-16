@@ -50,10 +50,12 @@
 #define VP_DATE_H 60
 #define DATE_COLOR TFT_SKYBLUE
 
-#define VP_MOON_ICON_X 45
+#define VP_MOON_ICON_X 35
 #define VP_MOON_ICON_Y 8
 #define VP_MOON_ICON_W 40
 #define VP_MOON_ICON_H 38
+#define MOON_WARNING_X 5
+#define MOON_WARNING_Y 16
 
 #define VP_WEA_X 190
 #define VP_WEA_Y 15
@@ -78,6 +80,7 @@ void drawStatic();
 void updateWeatherDisplay();
 void updateWeatherIcon();
 void updateMoonDisplay(uint8_t index);
+void updateMoonWarningDisplay();
 void updateDateString();
 void updateTimeDisplay(); // Updates both hours and minutes
 void updateHoursDisplay();

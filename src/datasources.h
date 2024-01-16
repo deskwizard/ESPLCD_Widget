@@ -6,7 +6,7 @@
 #include <WiFiClientSecure.h>
 
 #define BUF_SIZE 400 // Buffer size
-
+#define FETCH_OK 0
 #define DATA_UPDATE_INTERVAL (MINUTES_TO_MS * 15)
 
 ////////////////////////////// Weather //////////////////////////////

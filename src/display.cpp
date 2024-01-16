@@ -135,7 +135,10 @@ void handleDisplay() {
   } // Time set
 
   handleBacklight();
+
+#ifndef NO_ANIM
   animate();
+#endif
 }
 
 void animate() {
@@ -274,32 +277,7 @@ void handleBacklight() {
     // Serial.println();
   }
 }
-/*
-void updateMoonDisplay1() {
-  // Serial.println("updateMoonDisplay() called.");
-  //  Serial.println(moonIndex);
 
-  tft.setViewport(VP_MOON_ICON_X, VP_MOON_ICON_Y, VP_MOON_ICON_W,
-                  VP_MOON_ICON_H);
-  tft.fillScreen(TFT_BLACK);
-
-  if (moon.fetchSuccess != 0) {
-    tft.setTextColor(TFT_RED, TFT_BLACK);
-    tft.setFreeFont(FONT_MED2);
-    tft.drawChar('x', 9, 29, GFXFF);
-    tft.drawCircle(19, 18, 15, TFT_RED);
-    tft.drawCircle(19, 18, 16, TFT_RED);
-  } //
-  else {
-    tft.setTextColor(TFT_WHITE, TFT_BLACK);
-    tft.setFreeFont(FONT_MED2);
-    tft.drawChar(moonMap[moon.index], 0, 32, GFXFF);
-    tft.drawCircle(19, 18, 15, TFT_WHITE);
-    tft.drawCircle(19, 18, 16, TFT_WHITE);
-  }
-  tft.resetViewport();
-}
-*/
 void updateMoonDisplay(uint8_t index) {
 
   char imageName[80];
@@ -307,6 +285,43 @@ void updateMoonDisplay(uint8_t index) {
   xpos = VP_MOON_ICON_X;
   ypos = VP_MOON_ICON_Y;
   snprintf(imageName, 80, "/moon/small/%d.png", index);
+
+  /*
+    Serial.print("image filename: ");
+    Serial.println(imageName);
+   */
+
+  int16_t rc =
+      png.open(imageName, pngOpen, pngClose, pngRead, pngSeek, pngDraw);
+
+  if (rc == PNG_SUCCESS) {
+    tft.startWrite();
+    /*
+        Serial.printf("image specs: (%d x %d), %d bpp, pixel type: %d\n",
+                      png.getWidth(), png.getHeight(), png.getBpp(),
+                      png.getPixelType());
+     */
+    if (png.getWidth() > MAX_IMAGE_WIDTH) {
+      Serial.println("Image too wide for allocated line buffer size!");
+    } else {
+      rc = png.decode(NULL, 0);
+      png.close();
+    }
+    tft.endWrite();
+  }
+
+  if (moon.fetchSuccess == FETCH_OK) {
+    updateMoonWarningDisplay();
+  }
+}
+
+void updateMoonWarningDisplay() {
+
+  char imageName[80] = "/other/small/warning.png";
+
+  xpos = MOON_WARNING_X;
+  ypos = MOON_WARNING_Y;
+  // snprintf(imageName, 80, "/other/small/%d.png", index);
 
   Serial.print("image filename: ");
   Serial.println(imageName);
@@ -445,7 +460,7 @@ void pngDraw(PNGDRAW *pDraw) {
 // will use to open files, fetch data and close the file.
 
 void *pngOpen(const char *filename, int32_t *size) {
-  Serial.printf("Attempting to open %s\n", filename);
+  // Serial.printf("Attempting to open %s\n", filename);
   pngfile = FileSys.open(filename, "r");
   *size = pngfile.size();
   return &pngfile;
