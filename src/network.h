@@ -24,6 +24,7 @@ void connectWiFi();
 void handleWiFi();
 void findLocalNTP();
 void getNtpTime();
+void handleNTP();
 
 void sendNTPpacket(IPAddress &address);
 void WiFiGotIP(WiFiEvent_t event, WiFiEventInfo_t info);
