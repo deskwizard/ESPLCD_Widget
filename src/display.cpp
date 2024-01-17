@@ -28,10 +28,14 @@ extern Timezone myTZ;
 char dateString[50];
 
 #define beat_delay 400
-#define WEATHER_ANIM_FR 100
+
+#define WEATHER_ANIM_FR 75
 #define X_OFFSET 140
 
 void animateWeather() {
+
+  // Currently has 86 frames
+  static uint8_t frameCount = 0;
 
   static bool sunIcon = true;
   char imageName[30];
@@ -39,19 +43,20 @@ void animateWeather() {
   int16_t rc;
 
   snprintf(imageName, 30, "/weather/small/%d.png", sunIcon);
-
-  Serial.print(sunIcon);
-  Serial.print("   image filename: ");
-  Serial.print(imageName);
-
+  /*
+    Serial.print(sunIcon);
+    Serial.print("   image filename: ");
+    Serial.print(imageName);
+   */
   // Load image
   rc = png.open(imageName, pngOpen, pngClose, pngRead, pngSeek, pngDraw);
 
   if (rc == PNG_SUCCESS) {
-    Serial.printf(" -  Image specs: (%d x %d), %d bpp, pixel type: %d\n",
-                  png.getWidth(), png.getHeight(), png.getBpp(),
-                  png.getPixelType());
-
+    /*
+        Serial.printf(" -  Image specs: (%d x %d), %d bpp, pixel type: %d\n",
+                      png.getWidth(), png.getHeight(), png.getBpp(),
+                      png.getPixelType());
+     */
     if (png.getWidth() > MAX_IMAGE_WIDTH) {
       Serial.println("Image too wide for allocated line buffer size!");
       while (1)
@@ -59,7 +64,7 @@ void animateWeather() {
     }
   }
 
-  // Enter viewport
+  // Enter viewport (false = keep coordinates on TFT TL, not of Viewport)
   tft.setViewport(VP_WEA_ICON_X, VP_WEA_ICON_Y, VP_WEA_ICON_W, VP_WEA_ICON_H,
                   false);
   // tft.fillScreen(TFT_PURPLE);
@@ -67,7 +72,7 @@ void animateWeather() {
   xpos = VP_WEA_ICON_X - png.getWidth();
   ypos = VP_WEA_ICON_H - png.getHeight() - 9; // 100;
 
-  // move it around
+  // Move image around
   for (uint8_t x = xpos; x <= 80 + (X_OFFSET - png.getWidth()); x = (x + 2)) {
     // Serial.println(x);
     tft.startWrite();
@@ -80,12 +85,20 @@ void animateWeather() {
       ypos++;
     }
     delay(WEATHER_ANIM_FR);
+    frameCount++;
   }
   png.close();
 
   tft.resetViewport();
 
   sunIcon = !sunIcon;
+
+  if (sunIcon) {
+    // Serial.print("frameCount: ");
+    // Serial.println(frameCount);
+    frameCount = 0;
+  }
+
   // start over
   /*
     djph = true;
@@ -128,6 +141,8 @@ void setupDisplay() {
 
 #ifdef TEST_DISPLAY
 
+  updateWeatherIcon(true);
+  // delay(2000);
   while (1) {
     animateWeather();
   }
@@ -298,21 +313,28 @@ void updateWeatherDisplay() {
   tft.resetViewport();
 }
 
-void updateWeatherIcon() {
+void updateWeatherIcon(bool tiny) {
 
   char imageName[80];
 
-  snprintf(imageName, 80, "/weather/small/%d/%d.png", currentWeather.isDay,
-           currentWeather.weatherCode);
+  if (tiny) {
+    Serial.println("tiny");
+    snprintf(imageName, 80, "/weather/small/anim_img.png");
+    xpos = 10;
+    ypos = 12;
+  } else {
+    snprintf(imageName, 80, "/weather/small/%d/%d.png", currentWeather.isDay,
+             currentWeather.weatherCode);
+    xpos = WEA_ICON_X;
+    ypos = WEA_ICON_Y;
+  }
 
   Serial.print("image filename: ");
   Serial.println(imageName);
 
-  xpos = WEA_ICON_X;
-  ypos = WEA_ICON_Y;
-
   tft.setViewport(VP_WEA_ICON_X, VP_WEA_ICON_Y, VP_WEA_ICON_W, VP_WEA_ICON_H);
   // tft.fillScreen(TFT_BLUE);
+  tft.fillScreen(TFT_BLACK);
 
   int16_t rc =
       png.open(imageName, pngOpen, pngClose, pngRead, pngSeek, pngDraw);

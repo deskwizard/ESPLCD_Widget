@@ -79,7 +79,7 @@ void animate();
 void handleBacklight();
 void drawStatic();
 void updateWeatherDisplay();
-void updateWeatherIcon();
+void updateWeatherIcon(bool tiny = false);
 void updateMoonDisplay(uint8_t index);
 void updateMoonWarningDisplay();
 void updateDateString();
