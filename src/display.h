@@ -15,10 +15,17 @@
 #include "fonts/NotoSans_Regular42pt7b.h"
 #include "fonts/NotoSans_Regular70pt7b.h"
 
+#define FONT_SMALL &NotoSans_Regular12pt7b
+#define FONT_MED1 &NotoSans_Regular14pt7b
+#define FONT_MED2 &NotoSans_Regular20pt7b
+#define FONT_TIME &NotoSans_Regular70pt7b
+#define FONT_COLON &NotoSans_Regular42pt7b
+
 #define FileSys LittleFS
 
 #define DISP_W 320
 #define DISP_H 240
+#define MAX_IMAGE_WIDTH 300
 
 #define TFT_BACKLIGHT 5
 #define PWM1_CH 0
@@ -29,14 +36,18 @@
 #define CDS_READ_RATE 50
 #define PWM_MINIMUM 950 // PWM is inverted!
 
-#define MOON_ANIM_FR 125
 #define ANIMATION_START_DELAY (10 * 1000);
 
+// Moon animation
+#define MOON_ANIM_FR 150
+
+// Weather animation
 #define ANIM_FRAME_COUNT 42
 #define WEATHER_ANIM_FR 75
 #define WEATHER_ANIM_ICON_SIZE 20
 #define ANIM_ORIGIN_X (VP_WEA_ICON_X - WEATHER_ANIM_ICON_SIZE)
 #define ANIM_ORIGIN_Y (VP_WEA_ICON_H - WEATHER_ANIM_ICON_SIZE - 10)
+#define ANIM_X_OFFSET 180
 
 // Static items
 #define COLON_X_OFFSET 150

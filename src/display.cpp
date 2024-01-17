@@ -6,30 +6,21 @@
 #include "datasources.h"
 #include "defines.h"
 
-#define MAX_IMAGE_WIDTH 300
 File pngfile;
 PNG png;
-// Image coordinate used by pngDrawImage when drawing
+// Image coordinates used by pngDrawImage when drawing
 int16_t xpos = 0;
 int16_t ypos = 0;
-
-#define FONT_SMALL &NotoSans_Regular12pt7b
-#define FONT_MED1 &NotoSans_Regular14pt7b
-#define FONT_MED2 &NotoSans_Regular20pt7b
-#define FONT_TIME &NotoSans_Regular70pt7b
-#define FONT_COLON &NotoSans_Regular42pt7b
 
 TFT_eSPI tft = TFT_eSPI();
 
 extern time_t localTime;
 extern Timezone myTZ;
-
 char dateString[50];
 
 #define beat_delay 400 // Debug
 bool djph = false;     // Debug
 
-#define X_OFFSET 140
 uint16_t animXPos = ANIM_ORIGIN_X;
 uint16_t animYPos = ANIM_ORIGIN_Y;
 
@@ -48,7 +39,6 @@ void setupDisplay() {
 
   // TODO: Preload brightness and adjust ASAP
   for (int8_t x; x <= CDS_AVG_COUNT; x++) {
-    // Serial.println(x);
     handleBacklight();
   }
 
@@ -130,8 +120,6 @@ void setupDisplay() {
     // Serial.println();
   }
 #endif
-  // Serial.println("-------------------------------------------");
-  // Serial.println();
 }
 
 void handleDisplay() {
@@ -146,10 +134,8 @@ void handleDisplay() {
 
       serialClockDisplay();
 
-      // Serial.print("---- M: ");
-      // Serial.println(minute(localTime));
-
       updateMinutesDisplay();
+
       previousMinute = minute(localTime);
 
       if (minute(localTime) == 0) {
@@ -319,7 +305,7 @@ void animateWeather() {
 
   // This could be reworked
   if (currentFrame < 20 || currentFrame > 22) {
-    if (animXPos <= (X_OFFSET - WEATHER_ANIM_ICON_SIZE) + 40) {
+    if (animXPos <= (ANIM_X_OFFSET - WEATHER_ANIM_ICON_SIZE)) {
       animYPos--;
     } else {
       animYPos++;
@@ -335,7 +321,7 @@ void animateWeather() {
   if (currentFrame >= ANIM_FRAME_COUNT) {
     iconSunOrMoon = !iconSunOrMoon; // Toggle sun/moon image
     currentFrame = 0;
-  } //
+  }
 
   png.close();
 
@@ -388,12 +374,12 @@ void handleBacklight() {
 
     // Serial.println(average);
     // Serial.println(outputPWMValue);
+    // Serial.println();
 
     // Check for limits before writing
     ledcWrite(PWM1_CH, outputPWMValue);
 
     lastReadReadMillis = currentMillis;
-    // Serial.println();
   }
 }
 
@@ -406,21 +392,12 @@ void updateMoonDisplay(uint8_t index) {
 
   snprintf(imageFilename, 80, "/moon/small/%d.png", index);
 
-  /*
-    Serial.print("image filename: ");
-    Serial.println(imageFilename);
-   */
-
   int16_t rc = png.open(imageFilename, pngOpen, pngClose, pngRead, pngSeek,
                         pngDrawImage);
 
   if (rc == PNG_SUCCESS) {
     tft.startWrite();
-    /*
-        Serial.printf("image specs: (%d x %d), %d bpp, pixel type: %d\n",
-                      png.getWidth(), png.getHeight(), png.getBpp(),
-                      png.getPixelType());
-     */
+
     if (png.getWidth() > MAX_IMAGE_WIDTH) {
       Serial.println("Image too wide for allocated line buffer size!");
     } else {
