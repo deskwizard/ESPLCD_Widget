@@ -9,10 +9,9 @@
 #define MAX_IMAGE_WIDTH 300
 File pngfile;
 PNG png;
+// Image coordinate used by pngDrawImage when drawing
 int16_t xpos = 0;
 int16_t ypos = 0;
-
-bool djph = false;
 
 #define FONT_SMALL &NotoSans_Regular12pt7b
 #define FONT_MED1 &NotoSans_Regular14pt7b
@@ -27,86 +26,80 @@ extern Timezone myTZ;
 
 char dateString[50];
 
-#define beat_delay 400
-
+#define beat_delay 400 // Debug
+bool djph = false;     // Debug
 
 #define X_OFFSET 140
-uint16_t animXPos = 0;
-uint16_t animYPos = 0;
+uint16_t animXPos = ANIM_ORIGIN_X;
+uint16_t animYPos = ANIM_ORIGIN_Y;
 
+/*
+
+
+
+*/
 
 void animateWeather() {
 
   // Currently has 44 frames per cycle (either moon or sun)
-  static uint8_t frameCount = 0;
-
+  static uint8_t currentFrame = 0;
   static bool iconSunOrMoon = true; // Sun = true, moon = false
   char imageFilename[30];
 
-  int16_t rc;
-
-  snprintf(imageFilename, 30, "/weather/small/%d.png", iconSunOrMoon);
-  /*
-    Serial.print(iconSunOrMoon);
-    Serial.print("   image filename: ");
-    Serial.print(imageFilename);
-   */
-  // Load image
-  rc = png.open(imageFilename, pngOpen, pngClose, pngRead, pngSeek, pngDrawAnim);
-
-  if (rc == PNG_SUCCESS) {
-    /*
-        Serial.printf(" -  Image specs: (%d x %d), %d bpp, pixel type: %d\n",
-                      png.getWidth(), png.getHeight(), png.getBpp(),
-                      png.getPixelType());
-     */
-    if (png.getWidth() > MAX_IMAGE_WIDTH) {
-      Serial.println("Image too wide for allocated line buffer size!");
-      while (1)
-        ;
-    }
+  if (currentFrame == 0) {
+    animXPos = ANIM_ORIGIN_X;
+    animYPos = ANIM_ORIGIN_Y;
   }
+
+  // Load image
+  snprintf(imageFilename, 30, "/weather/small/%d.png", iconSunOrMoon);
+
+  int16_t rc =
+      png.open(imageFilename, pngOpen, pngClose, pngRead, pngSeek, pngDrawAnim);
 
   // Enter viewport (false = keep coordinates on top left of the screen,
   //                 not of the viewport)
   tft.setViewport(VP_WEA_ICON_X, VP_WEA_ICON_Y, VP_WEA_ICON_W, VP_WEA_ICON_H,
                   false);
   // tft.fillScreen(TFT_PURPLE);
+  /*
+    // Move image around
+    for (uint8_t x = animXPos; x <= 82 + (X_OFFSET - WEATHER_ANIM_ICON_SIZE);
+         x = (x + 2)) {
+   */
+  tft.startWrite();
+  rc = png.decode(NULL, 0);
+  tft.endWrite();
 
-  animXPos = VP_WEA_ICON_X - png.getWidth();
-  animYPos = VP_WEA_ICON_H - png.getHeight() - 9; // 100;
+  animXPos = animXPos + 2;
 
-  // Move image around
-  for (uint8_t x = animXPos; x <= 82 + (X_OFFSET - png.getWidth()); x = (x + 2)) {
-
-    tft.startWrite();
-    rc = png.decode(NULL, 0);
-    tft.endWrite();
-
-    animXPos = x;
-
-    if (frameCount < 21 || frameCount > 23) {
-      if (animXPos <= (X_OFFSET - png.getWidth()) + 40) {
-        animYPos--;
-      } else {
-        animYPos++;
-      }
+  // This could be reworked
+  if (currentFrame < 21 || currentFrame > 23) {
+    if (animXPos <= (X_OFFSET - WEATHER_ANIM_ICON_SIZE) + 40) {
+      animYPos--;
+    } else {
+      animYPos++;
     }
+  }
 
-    frameCount++;
-    delay(WEATHER_ANIM_FR);
+  currentFrame++;
+
+  if (currentFrame == 42) {
+    iconSunOrMoon = !iconSunOrMoon;
+  } //
+  else if (currentFrame == 44) {
+    currentFrame = 0;
   }
 
   png.close();
 
   tft.resetViewport();
 
-  iconSunOrMoon = !iconSunOrMoon;
   /*
-    Serial.print("frameCount: ");
-    Serial.println(frameCount);
+    Serial.print("currentFrame: ");
+    Serial.println(currentFrame);
      */
-  frameCount = 0;
+  // currentFrame = 0;
 
   // start over
   /*
@@ -150,12 +143,13 @@ void setupDisplay() {
 
 #ifdef TEST_DISPLAY
   uint8_t id = 0;
-  
-    updateWeatherIcon(true); // true = show center animation icon
-    while (1) {
-      animateWeather();
-    }
-   
+
+  updateWeatherIcon(true); // true = show center animation icon
+  while (1) {
+    animateWeather();
+    delay(25);
+  }
+
   while (1) {
 
     animate();
@@ -346,8 +340,8 @@ void updateWeatherIcon(bool tiny) {
   // tft.fillScreen(TFT_BLUE);
   tft.fillScreen(TFT_BLACK);
 
-  int16_t rc =
-      png.open(imageFilename, pngOpen, pngClose, pngRead, pngSeek, pngDrawImage);
+  int16_t rc = png.open(imageFilename, pngOpen, pngClose, pngRead, pngSeek,
+                        pngDrawImage);
 
   if (rc == PNG_SUCCESS) {
     tft.startWrite();
@@ -424,8 +418,8 @@ void updateMoonDisplay(uint8_t index) {
     Serial.println(imageFilename);
    */
 
-  int16_t rc =
-      png.open(imageFilename, pngOpen, pngClose, pngRead, pngSeek, pngDrawImage);
+  int16_t rc = png.open(imageFilename, pngOpen, pngClose, pngRead, pngSeek,
+                        pngDrawImage);
 
   if (rc == PNG_SUCCESS) {
     tft.startWrite();
@@ -495,8 +489,8 @@ void updateMoonWarningDisplay() {
   Serial.print("image filename: ");
   Serial.println(imageFilename);
 
-  int16_t rc =
-      png.open(imageFilename, pngOpen, pngClose, pngRead, pngSeek, pngDrawImage);
+  int16_t rc = png.open(imageFilename, pngOpen, pngClose, pngRead, pngSeek,
+                        pngDrawImage);
 
   if (rc == PNG_SUCCESS) {
     tft.startWrite();
