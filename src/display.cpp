@@ -54,6 +54,7 @@ void setupDisplay() {
   updateTimeDisplay();
   updateDateString();
   updateDateDisplay();
+  updateWeatherIcon(true); // true = show center animation icon
 
 #ifdef TEST_DISPLAY
   uint8_t id = 0;
