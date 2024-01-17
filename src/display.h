@@ -99,8 +99,8 @@ void updateDateDisplay();
 // render each image line to the TFT.  If you use a different TFT library
 // you will need to adapt this function to suit.
 // Callback function to draw pixels to the display
-void pngDraw(PNGDRAW *pDraw);
-
+void pngDrawImage(PNGDRAW *pDraw);
+void pngDrawAnim(PNGDRAW *pDraw);
 // Here are the callback functions that the decPNG library
 // will use to open files, fetch data and close the file.
 void *pngOpen(const char *filename, int32_t *size);

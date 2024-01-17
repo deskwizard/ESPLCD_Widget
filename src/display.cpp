@@ -29,7 +29,11 @@ char dateString[50];
 
 #define beat_delay 400
 
+
 #define X_OFFSET 140
+uint16_t animXPos = 0;
+uint16_t animYPos = 0;
+
 
 void animateWeather() {
 
@@ -48,7 +52,7 @@ void animateWeather() {
     Serial.print(imageFilename);
    */
   // Load image
-  rc = png.open(imageFilename, pngOpen, pngClose, pngRead, pngSeek, pngDraw);
+  rc = png.open(imageFilename, pngOpen, pngClose, pngRead, pngSeek, pngDrawAnim);
 
   if (rc == PNG_SUCCESS) {
     /*
@@ -69,23 +73,23 @@ void animateWeather() {
                   false);
   // tft.fillScreen(TFT_PURPLE);
 
-  xpos = VP_WEA_ICON_X - png.getWidth();
-  ypos = VP_WEA_ICON_H - png.getHeight() - 9; // 100;
+  animXPos = VP_WEA_ICON_X - png.getWidth();
+  animYPos = VP_WEA_ICON_H - png.getHeight() - 9; // 100;
 
   // Move image around
-  for (uint8_t x = xpos; x <= 82 + (X_OFFSET - png.getWidth()); x = (x + 2)) {
+  for (uint8_t x = animXPos; x <= 82 + (X_OFFSET - png.getWidth()); x = (x + 2)) {
 
     tft.startWrite();
     rc = png.decode(NULL, 0);
     tft.endWrite();
 
-    xpos = x;
+    animXPos = x;
 
     if (frameCount < 21 || frameCount > 23) {
-      if (xpos <= (X_OFFSET - png.getWidth()) + 40) {
-        ypos--;
+      if (animXPos <= (X_OFFSET - png.getWidth()) + 40) {
+        animYPos--;
       } else {
-        ypos++;
+        animYPos++;
       }
     }
 
@@ -145,15 +149,16 @@ void setupDisplay() {
   updateDateDisplay();
 
 #ifdef TEST_DISPLAY
-
-  updateWeatherIcon(true);
-  // delay(2000);
-  while (1) {
-    animateWeather();
-  }
-
   uint8_t id = 0;
+  
+    updateWeatherIcon(true); // true = show center animation icon
+    while (1) {
+      animateWeather();
+    }
+   
   while (1) {
+
+    animate();
 
     /*
         id = 0;
@@ -208,7 +213,7 @@ void setupDisplay() {
 */
     // delay(3000);
     // Serial.println("-------------------------------------------");
-    Serial.println();
+    // Serial.println();
   }
 #endif
   // Serial.println("-------------------------------------------");
@@ -342,7 +347,7 @@ void updateWeatherIcon(bool tiny) {
   tft.fillScreen(TFT_BLACK);
 
   int16_t rc =
-      png.open(imageFilename, pngOpen, pngClose, pngRead, pngSeek, pngDraw);
+      png.open(imageFilename, pngOpen, pngClose, pngRead, pngSeek, pngDrawImage);
 
   if (rc == PNG_SUCCESS) {
     tft.startWrite();
@@ -420,7 +425,7 @@ void updateMoonDisplay(uint8_t index) {
    */
 
   int16_t rc =
-      png.open(imageFilename, pngOpen, pngClose, pngRead, pngSeek, pngDraw);
+      png.open(imageFilename, pngOpen, pngClose, pngRead, pngSeek, pngDrawImage);
 
   if (rc == PNG_SUCCESS) {
     tft.startWrite();
@@ -491,7 +496,7 @@ void updateMoonWarningDisplay() {
   Serial.println(imageFilename);
 
   int16_t rc =
-      png.open(imageFilename, pngOpen, pngClose, pngRead, pngSeek, pngDraw);
+      png.open(imageFilename, pngOpen, pngClose, pngRead, pngSeek, pngDrawImage);
 
   if (rc == PNG_SUCCESS) {
     tft.startWrite();
@@ -621,10 +626,16 @@ void updateDateDisplay() {
 // render each image line to the TFT.  If you use a different TFT library
 // you will need to adapt this function to suit.
 // Callback function to draw pixels to the display
-void pngDraw(PNGDRAW *pDraw) {
+void pngDrawImage(PNGDRAW *pDraw) {
   uint16_t lineBuffer[MAX_IMAGE_WIDTH];
   png.getLineAsRGB565(pDraw, lineBuffer, PNG_RGB565_BIG_ENDIAN, 0xffffffff);
   tft.pushImage(xpos, ypos + pDraw->y, pDraw->iWidth, 1, lineBuffer);
+}
+
+void pngDrawAnim(PNGDRAW *pDraw) {
+  uint16_t lineBuffer[MAX_IMAGE_WIDTH];
+  png.getLineAsRGB565(pDraw, lineBuffer, PNG_RGB565_BIG_ENDIAN, 0xffffffff);
+  tft.pushImage(animXPos, animYPos + pDraw->y, pDraw->iWidth, 1, lineBuffer);
 }
 
 // Here are the callback functions that the decPNG library
