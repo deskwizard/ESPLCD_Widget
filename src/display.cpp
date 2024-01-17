@@ -12,6 +12,8 @@ PNG png;
 int16_t xpos = 0;
 int16_t ypos = 0;
 
+bool djph = false;
+
 #define FONT_SMALL &NotoSans_Regular12pt7b
 #define FONT_MED1 &NotoSans_Regular14pt7b
 #define FONT_MED2 &NotoSans_Regular20pt7b
@@ -26,7 +28,7 @@ extern Timezone myTZ;
 char dateString[50];
 
 #define beat_delay 400
-#define WEATHER_ANIM_FR 75
+#define WEATHER_ANIM_FR 100
 
 void animateWeather() {
 
@@ -110,7 +112,14 @@ void animateWeather() {
   }
   png.close();
 
+  tft.resetViewport();
+
   // start over
+  /*
+    djph = true;
+    updateMoonDisplay(30);
+    updateWeatherDisplay();
+   */
 }
 
 void setupDisplay() {
@@ -139,13 +148,11 @@ void setupDisplay() {
   // tft.fillScreen(TFT_PURPLE);
 
   drawStatic();
-  updateMoonDisplay(29);
+  updateMoonDisplay(29); ////////////////////////////////////////////////////
   updateWeatherDisplay();
   updateTimeDisplay();
   updateDateString();
   updateDateDisplay();
-
-  // delay(1000);
 
 #ifdef TEST_DISPLAY
 
@@ -208,8 +215,6 @@ void setupDisplay() {
       }
       png.close();
     }
-
-    // CLOSE PNG WHEN DONE!
 
     tft.resetViewport();
 
@@ -361,7 +366,14 @@ void updateWeatherDisplay() {
   } //
   else {
     tft.setFreeFont(FONT_SMALL);
-    snprintf(buffer, 50, "Fetching...");
+
+    if (djph) {
+      tft.setTextColor(TFT_PINK, TFT_BLACK);
+      snprintf(buffer, 50, " 8===o~~");
+    }
+
+    // snprintf(buffer, 50, "Fetching...");
+    //  TODO:  Shove the caution icon in here or something like that
   }
 
   tft.drawString(buffer, 0, 0, GFXFF);
@@ -455,6 +467,7 @@ void updateMoonDisplay(uint8_t index) {
 
   xpos = VP_MOON_ICON_X;
   ypos = VP_MOON_ICON_Y;
+
   snprintf(imageName, 80, "/moon/small/%d.png", index);
 
   /*
@@ -559,6 +572,7 @@ void drawColon() {
   tft.setFreeFont(FONT_COLON);
   tft.drawChar(':', COLON_X_OFFSET, COLON_Y_OFFSET, GFXFF);
 }
+
 void updateTimeDisplay() {
   updateHoursDisplay();
   updateMinutesDisplay();
