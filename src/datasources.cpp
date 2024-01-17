@@ -58,14 +58,21 @@ void handleDataSources() {
 }
 
 void updateDataSources() {
+  uint32_t savedMillis = millis();
   updateMoonData();
+  Serial.print("Moon fetch delta: ");
+  Serial.println(millis() - savedMillis);
+
+  savedMillis = millis();
   updateWeatherData();
+  Serial.print("Weather fetch delta: ");
+  Serial.println(millis() - savedMillis);
 }
 
 ////////////////////////////// Moon //////////////////////////////
 void updateMoonData() {
 
-  updateMoonDisplay(29);
+  //updateMoonDisplay(29);
 
   client.setInsecure();
 
@@ -174,7 +181,6 @@ void updateWeatherData() {
     currentWeather.humidity = weatherInfo["current"]["relative_humidity_2m"];
     currentWeather.weatherCode = weatherInfo["current"]["weather_code"];
     currentWeather.isDay = weatherInfo["current"]["is_day"];
-    
 
     Serial.print("Weather Code: ");
     Serial.print(currentWeather.weatherCode);
@@ -214,7 +220,7 @@ void updateWeatherData() {
 
     updateWeatherIcon();
     updateWeatherDisplay();
-    
+
   } //
   else {
     Serial.println("Weather fetch error: ");
