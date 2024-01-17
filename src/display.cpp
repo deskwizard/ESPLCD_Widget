@@ -28,26 +28,24 @@ extern Timezone myTZ;
 char dateString[50];
 
 #define beat_delay 400
-#define WEATHER_ANIM_FR 200
+#define WEATHER_ANIM_FR 100
 #define X_OFFSET 140
 
 void animateWeather() {
 
-  char imageName1[80] = "/weather/small/sun.png";
-  char imageName2[80] = "/weather/small/moon.png";
+  static bool sunIcon = true;
+  char imageName[30];
+
   int16_t rc;
 
-  Serial.println("------- Done with the sun, now for the moon! -------");
+  snprintf(imageName, 30, "/weather/small/%d.png", sunIcon);
 
-  // Reset image display location
-  xpos = 0;
-  ypos = 0;
+  Serial.print(sunIcon);
+  Serial.print("   image filename: ");
+  Serial.print(imageName);
 
-  Serial.print("image filename: ");
-  Serial.print(imageName2);
-
-  // Load moon
-  rc = png.open(imageName2, pngOpen, pngClose, pngRead, pngSeek, pngDraw);
+  // Load image
+  rc = png.open(imageName, pngOpen, pngClose, pngRead, pngSeek, pngDraw);
 
   if (rc == PNG_SUCCESS) {
     Serial.printf(" -  Image specs: (%d x %d), %d bpp, pixel type: %d\n",
@@ -62,11 +60,12 @@ void animateWeather() {
   }
 
   // Enter viewport
-  tft.setViewport(VP_WEA_ICON_X, VP_WEA_ICON_Y, VP_WEA_ICON_W, VP_WEA_ICON_H, false);
-  tft.fillScreen(TFT_PURPLE);
+  tft.setViewport(VP_WEA_ICON_X, VP_WEA_ICON_Y, VP_WEA_ICON_W, VP_WEA_ICON_H,
+                  false);
+  // tft.fillScreen(TFT_PURPLE);
 
   xpos = VP_WEA_ICON_X - png.getWidth();
-  ypos = VP_WEA_ICON_H - png.getHeight() - 9;//100;
+  ypos = VP_WEA_ICON_H - png.getHeight() - 9; // 100;
 
   // move it around
   for (uint8_t x = xpos; x <= 80 + (X_OFFSET - png.getWidth()); x = (x + 2)) {
@@ -86,6 +85,7 @@ void animateWeather() {
 
   tft.resetViewport();
 
+  sunIcon = !sunIcon;
   // start over
   /*
     djph = true;
@@ -133,62 +133,7 @@ void setupDisplay() {
   }
 
   uint8_t id = 0;
-
-  char imageName2[80] = "/weather/small/sun.png";
-  char imageName1[80] = "/weather/small/moon.png";
-
-  Serial.print("image filename: ");
-  Serial.print(imageName1);
-
-  int16_t rc =
-      png.open(imageName1, pngOpen, pngClose, pngRead, pngSeek, pngDraw);
-
-  if (rc == PNG_SUCCESS) {
-    // tft.startWrite();
-    Serial.printf(" -  Image specs: (%d x %d), %d bpp, pixel type: %d\n",
-                  png.getWidth(), png.getHeight(), png.getBpp(),
-                  png.getPixelType());
-
-    if (png.getWidth() > MAX_IMAGE_WIDTH) {
-      Serial.println("Image too wide for allocated line buffer size!");
-      while (1)
-        ;
-    }
-  }
-
-  xpos = 0;
-  ypos = 0;
-
   while (1) {
-
-    char buffer[50];
-
-    tft.setViewport(VP_WEA_ICON_X, VP_WEA_ICON_Y, VP_WEA_ICON_W, VP_WEA_ICON_H);
-    tft.fillScreen(TFT_BLUE);
-
-    while (1) {
-      /*
-            tft.startWrite();
-            rc = png.decode(NULL, 0);
-            tft.endWrite();
-       */
-      for (uint8_t x = xpos; x <= 60; x = (x + 2)) {
-        // Serial.println(x);
-        tft.startWrite();
-        rc = png.decode(NULL, 0);
-        tft.endWrite();
-        xpos = x;
-        /*
-                tft.startWrite();
-                rc = png.decode(NULL, 0);
-                tft.endWrite();
-                 */
-        delay(beat_delay);
-      }
-      png.close();
-    }
-
-    tft.resetViewport();
 
     /*
         id = 0;
