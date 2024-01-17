@@ -28,50 +28,14 @@ extern Timezone myTZ;
 char dateString[50];
 
 #define beat_delay 400
-#define WEATHER_ANIM_FR 100
+#define WEATHER_ANIM_FR 200
+#define X_OFFSET 140
 
 void animateWeather() {
 
   char imageName1[80] = "/weather/small/sun.png";
   char imageName2[80] = "/weather/small/moon.png";
-
-  Serial.print("image filename: ");
-  Serial.print(imageName1);
-
-  // Reset image display location
-  xpos = 0;
-  ypos = 0;
-
-  // Load sun
-  int16_t rc =
-      png.open(imageName1, pngOpen, pngClose, pngRead, pngSeek, pngDraw);
-
-  if (rc == PNG_SUCCESS) {
-    Serial.printf(" -  Image specs: (%d x %d), %d bpp, pixel type: %d\n",
-                  png.getWidth(), png.getHeight(), png.getBpp(),
-                  png.getPixelType());
-
-    if (png.getWidth() > MAX_IMAGE_WIDTH) {
-      Serial.println("Image too wide for allocated line buffer size!");
-      while (1)
-        ;
-    }
-  }
-
-  // Enter viewport
-  tft.setViewport(VP_WEA_ICON_X, VP_WEA_ICON_Y, VP_WEA_ICON_W, VP_WEA_ICON_H);
-  // tft.fillScreen(TFT_BLUE);
-
-  // move it around
-  for (uint8_t x = xpos; x <= 70; x = (x + 2)) {
-    // Serial.println(x);
-    tft.startWrite();
-    rc = png.decode(NULL, 0);
-    tft.endWrite();
-    xpos = x;
-    delay(WEATHER_ANIM_FR);
-  }
-  png.close();
+  int16_t rc;
 
   Serial.println("------- Done with the sun, now for the moon! -------");
 
@@ -98,16 +62,24 @@ void animateWeather() {
   }
 
   // Enter viewport
-  tft.setViewport(VP_WEA_ICON_X, VP_WEA_ICON_Y, VP_WEA_ICON_W, VP_WEA_ICON_H);
-  // tft.fillScreen(TFT_BLUE);
+  tft.setViewport(VP_WEA_ICON_X, VP_WEA_ICON_Y, VP_WEA_ICON_W, VP_WEA_ICON_H, false);
+  tft.fillScreen(TFT_PURPLE);
+
+  xpos = VP_WEA_ICON_X - png.getWidth();
+  ypos = VP_WEA_ICON_H - png.getHeight();//100;
 
   // move it around
-  for (uint8_t x = xpos; x <= 70; x = (x + 2)) {
+  for (uint8_t x = xpos; x <= 80 + (X_OFFSET - png.getWidth()); x = (x + 2)) {
     // Serial.println(x);
     tft.startWrite();
     rc = png.decode(NULL, 0);
     tft.endWrite();
     xpos = x;
+    if (xpos <= (X_OFFSET - png.getWidth()) + 40) {
+      ypos--;
+    } else {
+      ypos++;
+    }
     delay(WEATHER_ANIM_FR);
   }
   png.close();
