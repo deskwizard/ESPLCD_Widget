@@ -33,82 +33,6 @@ bool djph = false;     // Debug
 uint16_t animXPos = ANIM_ORIGIN_X;
 uint16_t animYPos = ANIM_ORIGIN_Y;
 
-/*
-
-
-
-*/
-
-void animateWeather() {
-
-  // Currently has 44 frames per cycle (either moon or sun)
-  static uint8_t currentFrame = 0;
-  static bool iconSunOrMoon = true; // Sun = true, moon = false
-  char imageFilename[30];
-
-  if (currentFrame == 0) {
-    animXPos = ANIM_ORIGIN_X;
-    animYPos = ANIM_ORIGIN_Y;
-  }
-
-  // Load image
-  snprintf(imageFilename, 30, "/weather/small/%d.png", iconSunOrMoon);
-
-  int16_t rc =
-      png.open(imageFilename, pngOpen, pngClose, pngRead, pngSeek, pngDrawAnim);
-
-  // Enter viewport (false = keep coordinates on top left of the screen,
-  //                 not of the viewport)
-  tft.setViewport(VP_WEA_ICON_X, VP_WEA_ICON_Y, VP_WEA_ICON_W, VP_WEA_ICON_H,
-                  false);
-  // tft.fillScreen(TFT_PURPLE);
-  /*
-    // Move image around
-    for (uint8_t x = animXPos; x <= 82 + (X_OFFSET - WEATHER_ANIM_ICON_SIZE);
-         x = (x + 2)) {
-   */
-  tft.startWrite();
-  rc = png.decode(NULL, 0);
-  tft.endWrite();
-
-  animXPos = animXPos + 2;
-
-  // This could be reworked
-  if (currentFrame < 21 || currentFrame > 23) {
-    if (animXPos <= (X_OFFSET - WEATHER_ANIM_ICON_SIZE) + 40) {
-      animYPos--;
-    } else {
-      animYPos++;
-    }
-  }
-
-  currentFrame++;
-
-  if (currentFrame == 42) {
-    iconSunOrMoon = !iconSunOrMoon;
-  } //
-  else if (currentFrame == 44) {
-    currentFrame = 0;
-  }
-
-  png.close();
-
-  tft.resetViewport();
-
-  /*
-    Serial.print("currentFrame: ");
-    Serial.println(currentFrame);
-     */
-  // currentFrame = 0;
-
-  // start over
-  /*
-    djph = true;
-    updateMoonDisplay(30);
-    updateWeatherDisplay();
-   */
-}
-
 void setupDisplay() {
 
   // Initialise FS
@@ -145,10 +69,6 @@ void setupDisplay() {
   uint8_t id = 0;
 
   updateWeatherIcon(true); // true = show center animation icon
-  while (1) {
-    animateWeather();
-    delay(25);
-  }
 
   while (1) {
 
@@ -254,10 +174,18 @@ void handleDisplay() {
 void animate() {
 
   uint32_t currentMillis = millis();
-  static uint32_t previousMillis = 0;
+  static uint32_t previousMoonMillis = 0;
+  static uint32_t previousWeatherMillis = 0;
   static uint8_t id;
 
-  if (((uint32_t)(currentMillis - previousMillis) >= MOON_ANIM_FR) &&
+  if (((uint32_t)(currentMillis - previousWeatherMillis) >= WEATHER_ANIM_FR) &&
+      currentWeather.fetchSuccess == 42) {
+    animateWeather();
+    previousWeatherMillis = currentMillis;
+  }
+
+  currentMillis = millis();
+  if (((uint32_t)(currentMillis - previousMoonMillis) >= MOON_ANIM_FR) &&
       moon.fetchSuccess == 42) {
 
     updateMoonDisplay(id);
@@ -266,7 +194,7 @@ void animate() {
       id = 0;
     }
 
-    previousMillis = currentMillis;
+    previousMoonMillis = currentMillis;
   }
 }
 
@@ -324,8 +252,10 @@ void updateWeatherIcon(bool tiny) {
   if (tiny) {
     Serial.println("tiny");
     snprintf(imageFilename, 80, "/weather/small/anim_img.png");
+    // Adjust location of the weather animation center image here
+    // It needs adjustment when the image size changes (duh...).
     xpos = 10;
-    ypos = 12;
+    ypos = 15;
   } else {
     snprintf(imageFilename, 80, "/weather/small/%d/%d.png",
              currentWeather.isDay, currentWeather.weatherCode);
@@ -359,6 +289,69 @@ void updateWeatherIcon(bool tiny) {
   }
 
   tft.resetViewport();
+}
+
+void animateWeather() {
+
+  // Currently has 42 frames per cycle (either moon or sun)
+  static uint8_t currentFrame = 0;
+  static bool iconSunOrMoon = true; // Sun = true, moon = false
+  char imageFilename[30];
+
+  if (currentFrame == 0) {
+    animXPos = ANIM_ORIGIN_X;
+    animYPos = ANIM_ORIGIN_Y;
+  }
+
+  // Load image
+  snprintf(imageFilename, 30, "/weather/small/%d.png", iconSunOrMoon);
+
+  int16_t rc =
+      png.open(imageFilename, pngOpen, pngClose, pngRead, pngSeek, pngDrawAnim);
+
+  // Enter viewport (false = keep coordinates on top left of the screen,
+  //                 not of the viewport)
+  tft.setViewport(VP_WEA_ICON_X, VP_WEA_ICON_Y, VP_WEA_ICON_W, VP_WEA_ICON_H,
+                  false);
+  // tft.fillScreen(TFT_PURPLE); // Will erase the center icon, beware.
+
+  animXPos = animXPos + 2;
+
+  // This could be reworked
+  if (currentFrame < 20 || currentFrame > 22) {
+    if (animXPos <= (X_OFFSET - WEATHER_ANIM_ICON_SIZE) + 40) {
+      animYPos--;
+    } else {
+      animYPos++;
+    }
+  }
+
+  tft.startWrite();
+  rc = png.decode(NULL, 0);
+  tft.endWrite();
+
+  currentFrame++;
+
+  if (currentFrame >= ANIM_FRAME_COUNT) {
+    iconSunOrMoon = !iconSunOrMoon; // Toggle sun/moon image
+    currentFrame = 0;
+  } //
+
+  png.close();
+
+  tft.resetViewport();
+
+  /*
+    Serial.print("currentFrame: ");
+    Serial.println(currentFrame);
+  */
+
+  // start over
+  /*
+    djph = true;
+    updateMoonDisplay(30);
+    updateWeatherDisplay();
+   */
 }
 
 void handleBacklight() {

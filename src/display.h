@@ -2,9 +2,9 @@
 #define _DISPLAY_H_
 
 #include <LittleFS.h>
+#include <PNGdec.h>
 #include <SPI.h>
 #include <TFT_eSPI.h>
-#include <PNGdec.h>
 #include <TimeLib.h>
 #include <Timezone.h>
 
@@ -29,13 +29,14 @@
 #define CDS_READ_RATE 50
 #define PWM_MINIMUM 950 // PWM is inverted!
 
-#define MOON_ANIM_FR 150
+#define MOON_ANIM_FR 125
 #define ANIMATION_START_DELAY (10 * 1000);
 
+#define ANIM_FRAME_COUNT 42
 #define WEATHER_ANIM_FR 75
 #define WEATHER_ANIM_ICON_SIZE 20
 #define ANIM_ORIGIN_X (VP_WEA_ICON_X - WEATHER_ANIM_ICON_SIZE)
-#define ANIM_ORIGIN_Y (VP_WEA_ICON_H - WEATHER_ANIM_ICON_SIZE - 8)
+#define ANIM_ORIGIN_Y (VP_WEA_ICON_H - WEATHER_ANIM_ICON_SIZE - 10)
 
 // Static items
 #define COLON_X_OFFSET 150
@@ -85,6 +86,7 @@ void handleBacklight();
 void drawStatic();
 void updateWeatherDisplay();
 void updateWeatherIcon(bool tiny = false);
+void animateWeather();
 void updateMoonDisplay(uint8_t index);
 void updateMoonWarningDisplay();
 void updateDateString();
