@@ -29,8 +29,10 @@
 #define CDS_READ_RATE 50
 #define PWM_MINIMUM 950 // PWM is inverted!
 
-#define ANIMATION_MS 150
+#define MOON_ANIM_FR 150
 #define ANIMATION_START_DELAY (10 * 1000);
+#define WEATHER_ANIM_FR 75
+
 
 // Static items
 #define COLON_X_OFFSET 150
