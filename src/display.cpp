@@ -241,8 +241,8 @@ void updateWeatherIcon(bool tiny) {
     snprintf(imageFilename, 80, "/weather/small/anim_img.png");
     // Adjust location of the weather animation center image here
     // It needs adjustment when the image size changes (duh...).
-    xpos = 10;
-    ypos = 15;
+    xpos = 7;
+    ypos = 26;
   } else {
     snprintf(imageFilename, 80, "/weather/small/%d/%d.png",
              currentWeather.isDay, currentWeather.weatherCode);
