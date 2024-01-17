@@ -66,7 +66,7 @@ void animateWeather() {
   tft.fillScreen(TFT_PURPLE);
 
   xpos = VP_WEA_ICON_X - png.getWidth();
-  ypos = VP_WEA_ICON_H - png.getHeight();//100;
+  ypos = VP_WEA_ICON_H - png.getHeight() - 9;//100;
 
   // move it around
   for (uint8_t x = xpos; x <= 80 + (X_OFFSET - png.getWidth()); x = (x + 2)) {
