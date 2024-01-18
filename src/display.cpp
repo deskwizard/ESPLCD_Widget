@@ -137,7 +137,7 @@ void handleDisplay() {
 
       serialClockDisplay();
 
-      updateMinutesDisplay();
+      // updateMinutesDisplay();
 
       previousMinute = minute(localTime);
 
@@ -150,6 +150,8 @@ void handleDisplay() {
           updateDateDisplay();
         }
       }
+
+      updateMinutesDisplay();
     }
   } // Time set
 
@@ -520,6 +522,7 @@ void updateHoursDisplay() {
     tft.fillScreen(TFT_NAVY);
     timeDigitsOffset = VP_TIME_W / 2;
   }
+
   /*
     if (tens >= 10) {
       tft.drawNumber(tens, 0, 0, GFXFF);
@@ -555,12 +558,15 @@ void updateMinutesDisplay() {
 
   tft.setTextColor(TIME_COLOR, TFT_BLACK);
 
-  tft.setViewport((DISP_W - (VP_TIME_W * 2)) - timeDigitsOffset, VP_TIME_Y, VP_TIME_W, VP_TIME_H);
-  //tft.setViewport((DISP_W - (VP_TIME_W * 2)), VP_TIME_Y, VP_TIME_W, VP_TIME_H);
+  tft.setViewport((DISP_W - (VP_TIME_W * 2)) - timeDigitsOffset, VP_TIME_Y,
+                  VP_TIME_W, VP_TIME_H);
+  // tft.setViewport((DISP_W - (VP_TIME_W * 2)), VP_TIME_Y, VP_TIME_W,
+  // VP_TIME_H);
   tft.drawNumber(tens, 0, 0, GFXFF);
   tft.resetViewport();
 
-  tft.setViewport((DISP_W - VP_TIME_W) - timeDigitsOffset, VP_TIME_Y, VP_TIME_W, VP_TIME_H);
+  tft.setViewport((DISP_W - VP_TIME_W) - timeDigitsOffset, VP_TIME_Y, VP_TIME_W,
+                  VP_TIME_H);
   tft.drawNumber(ones, 0, 0, GFXFF);
   tft.resetViewport();
 }
