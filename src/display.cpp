@@ -485,7 +485,7 @@ void updateMoonWarningDisplay() {
 }
 
 void drawColon() {
-return;
+  return;
   // The ':' in the middle
   tft.setTextColor(TIME_COLOR, TFT_BLACK);
   tft.setFreeFont(FONT_COLON);
@@ -514,13 +514,13 @@ void updateHoursDisplay() {
 
   // TViewports
   tft.setViewport(VP_TIME_X, VP_TIME_Y, VP_TIME_W, VP_TIME_H);
-  //  tft.drawNumber(tens, 0, 0, GFXFF);
 
   if (tens != 0) {
     tft.drawNumber(tens, 0, 0, GFXFF);
     timeDigitsOffset = 0;
   } else {
-    //tft.fillScreen(TFT_NAVY);
+    // Needed to clear the part of the digit left over by the move
+    tft.fillScreen(TFT_BLACK);
     timeDigitsOffset = VP_TIME_W / 2;
   }
 
@@ -528,13 +528,15 @@ void updateHoursDisplay() {
 
   tft.setViewport((VP_TIME_W - timeDigitsOffset), VP_TIME_Y, VP_TIME_W + 20,
                   VP_TIME_H);
-  //tft.fillScreen(TFT_PURPLE);
-  
+
+  // Needed to clear the part of the digit left over by the move
+  tft.fillScreen(TFT_BLACK);
+
   tft.drawNumber(ones, 0, 0, GFXFF);
 
   // The ':' in the middle
   tft.setFreeFont(FONT_COLON);
-  tft.drawChar(':', 75, 77, GFXFF);
+  tft.drawChar(':', 75, 80, GFXFF);
 
   tft.resetViewport();
 }
@@ -557,13 +559,16 @@ void updateMinutesDisplay() {
 
   tft.setViewport((DISP_W - (VP_TIME_W * 2)) - timeDigitsOffset, VP_TIME_Y,
                   VP_TIME_W, VP_TIME_H);
-  // tft.setViewport((DISP_W - (VP_TIME_W * 2)), VP_TIME_Y, VP_TIME_W,
-  // VP_TIME_H);
+
   tft.drawNumber(tens, 0, 0, GFXFF);
   tft.resetViewport();
 
-  tft.setViewport((DISP_W - VP_TIME_W) - timeDigitsOffset, VP_TIME_Y, VP_TIME_W,
-                  VP_TIME_H);
+  tft.setViewport((DISP_W - VP_TIME_W) - timeDigitsOffset, VP_TIME_Y,
+                  VP_TIME_W + 40, VP_TIME_H);
+
+  // Needed to clear the part of the digit left over by the move
+  tft.fillScreen(TFT_BLACK);
+
   tft.drawNumber(ones, 0, 0, GFXFF);
   tft.resetViewport();
 }
