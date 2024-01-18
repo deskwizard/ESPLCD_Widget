@@ -485,17 +485,19 @@ void updateMoonWarningDisplay() {
 }
 
 void drawColon() {
-
+return;
   // The ':' in the middle
   tft.setTextColor(TIME_COLOR, TFT_BLACK);
   tft.setFreeFont(FONT_COLON);
-  tft.drawChar(':', COLON_X_OFFSET - timeDigitsOffset, COLON_Y_OFFSET, GFXFF);
+  // tft.drawChar(':', COLON_X_OFFSET - timeDigitsOffset, COLON_Y_OFFSET,
+  // GFXFF);
+  tft.drawChar(':', 50, 70, GFXFF);
 }
 
 void updateTimeDisplay() {
   updateHoursDisplay();
-  drawColon();
   updateMinutesDisplay();
+  // drawColon();
 }
 
 void updateHoursDisplay() {
@@ -518,26 +520,22 @@ void updateHoursDisplay() {
     tft.drawNumber(tens, 0, 0, GFXFF);
     timeDigitsOffset = 0;
   } else {
-    tft.fillScreen(TFT_NAVY);
+    //tft.fillScreen(TFT_NAVY);
     timeDigitsOffset = VP_TIME_W / 2;
   }
 
-  /*
-    if (tens >= 10) {
-      tft.drawNumber(tens, 0, 0, GFXFF);
-      timeDigitsOffset = 0;
-      //tft.fillScreen(TFT_BLACK);
-    } //
-    else {
-      // tft.fillScreen(TFT_BLACK);
-      //timeDigitsOffset = VP_TIME_W / 2;
-    }
-    */
   tft.resetViewport();
 
-  tft.setViewport(VP_TIME_W - timeDigitsOffset, VP_TIME_Y, VP_TIME_W,
+  tft.setViewport((VP_TIME_W - timeDigitsOffset), VP_TIME_Y, VP_TIME_W + 20,
                   VP_TIME_H);
+  //tft.fillScreen(TFT_PURPLE);
+  
   tft.drawNumber(ones, 0, 0, GFXFF);
+
+  // The ':' in the middle
+  tft.setFreeFont(FONT_COLON);
+  tft.drawChar(':', 75, 77, GFXFF);
+
   tft.resetViewport();
 }
 
