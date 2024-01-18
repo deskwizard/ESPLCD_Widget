@@ -16,7 +16,7 @@ Timezone myTZ(myDST, mySTD);
 time_t localTime;
 
 // Debug
-bool forceNTPFail = false;
+bool forceNTPFail = true;
 bool forceBadRTC = false;
 bool serialClockEnabled = false;
 

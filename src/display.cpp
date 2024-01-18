@@ -24,6 +24,8 @@ bool djph = false;     // Debug
 uint16_t animXPos = ANIM_ORIGIN_X;
 uint16_t animYPos = ANIM_ORIGIN_Y;
 
+uint8_t timeDigitsOffset = 0;
+
 void setupDisplay() {
 
   // Initialise FS
@@ -50,7 +52,7 @@ void setupDisplay() {
 
   drawStatic();
   updateMoonDisplay(29); ////////////////////////////////////////////////////
-  updateWeatherDisplay();
+  // updateWeatherDisplay();
   updateTimeDisplay();
   updateDateString();
   updateDateDisplay();
@@ -481,14 +483,17 @@ void updateMoonWarningDisplay() {
 }
 
 void drawColon() {
+
+  return;
   // The ':' in the middle
   tft.setTextColor(TIME_COLOR, TFT_BLACK);
   tft.setFreeFont(FONT_COLON);
-  tft.drawChar(':', COLON_X_OFFSET, COLON_Y_OFFSET, GFXFF);
+  tft.drawChar(':', COLON_X_OFFSET - timeDigitsOffset, COLON_Y_OFFSET, GFXFF);
 }
 
 void updateTimeDisplay() {
   updateHoursDisplay();
+  drawColon();
   updateMinutesDisplay();
 }
 
@@ -506,15 +511,29 @@ void updateHoursDisplay() {
 
   // TViewports
   tft.setViewport(VP_TIME_X, VP_TIME_Y, VP_TIME_W, VP_TIME_H);
+  //  tft.drawNumber(tens, 0, 0, GFXFF);
+
   if (tens != 0) {
     tft.drawNumber(tens, 0, 0, GFXFF);
-  } //
-  else {
-    // tft.fillScreen(TFT_BLACK);
   }
+  else {
+    tft.fillScreen(TFT_NAVY);
+  }
+  /*
+    if (tens >= 10) {
+      tft.drawNumber(tens, 0, 0, GFXFF);
+      timeDigitsOffset = 0;
+      //tft.fillScreen(TFT_BLACK);
+    } //
+    else {
+      // tft.fillScreen(TFT_BLACK);
+      //timeDigitsOffset = VP_TIME_W / 2;
+    }
+    */
   tft.resetViewport();
 
-  tft.setViewport(VP_TIME_W, VP_TIME_Y, VP_TIME_W, VP_TIME_H);
+  tft.setViewport(VP_TIME_W - timeDigitsOffset, VP_TIME_Y, VP_TIME_W,
+                  VP_TIME_H);
   tft.drawNumber(ones, 0, 0, GFXFF);
   tft.resetViewport();
 }
@@ -533,11 +552,13 @@ void updateMinutesDisplay() {
 
   tft.setTextColor(TIME_COLOR, TFT_BLACK);
 
-  tft.setViewport(DISP_W - (VP_TIME_W * 2), VP_TIME_Y, VP_TIME_W, VP_TIME_H);
+  tft.setViewport((DISP_W - (VP_TIME_W * 2) - timeDigitsOffset), VP_TIME_Y,
+                  VP_TIME_W, VP_TIME_H);
   tft.drawNumber(tens, 0, 0, GFXFF);
   tft.resetViewport();
 
-  tft.setViewport(DISP_W - VP_TIME_W, VP_TIME_Y, VP_TIME_W, VP_TIME_H);
+  tft.setViewport((DISP_W - VP_TIME_W) - timeDigitsOffset, VP_TIME_Y, VP_TIME_W,
+                  VP_TIME_H);
   tft.drawNumber(ones, 0, 0, GFXFF);
   tft.resetViewport();
 }

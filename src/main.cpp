@@ -29,9 +29,8 @@ void loop() {
 #ifndef NO_NET
   handleWiFi();
   handleNTP();
-
-#endif
   handleDataSources();
+#endif
 
   handleDisplay();
 
@@ -59,11 +58,12 @@ void processSyncMessage() {
   if (pctime >= DEFAULT_TIME) { // check the integer is a valid time (greater
                                 // than Jan 1 2013)
     Serial.println(" *** Serial time and RTC update ***");
-    setTime(
-        pctime +
-        18000); // Sync Arduino clock to the time received on the serial port
+
+    // Sync Arduino clock to the time received on the serial port
+    setTime(pctime + 18000);
     RTC.set(pctime + 18000);
     serialClockDisplay();
+    ESP.restart();
   }
 }
 
