@@ -101,7 +101,6 @@ void animateWeather();
 void updateMoonDisplay(uint8_t index);
 void updateMoonWarningDisplay();
 void updateDateString();
-void drawColon();
 void updateTimeDisplay(); // Updates both hours and minutes
 void updateHoursDisplay();
 void updateMinutesDisplay();

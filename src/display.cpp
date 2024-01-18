@@ -16,7 +16,7 @@ TFT_eSPI tft = TFT_eSPI();
 
 extern time_t localTime;
 extern Timezone myTZ;
-char dateString[50];
+char dateString[60];
 
 #define beat_delay 400 // Debug
 bool djph = false;     // Debug
@@ -241,7 +241,7 @@ void updateWeatherIcon(bool tiny) {
   char imageFilename[80];
 
   if (tiny) {
-    Serial.println("tiny");
+    // Serial.println("tiny");
     snprintf(imageFilename, 80, "/weather/small/anim_img.png");
     // Adjust location of the weather animation center image here
     // It needs adjustment when the image size changes (duh...).
@@ -484,20 +484,9 @@ void updateMoonWarningDisplay() {
   }
 }
 
-void drawColon() {
-  return;
-  // The ':' in the middle
-  tft.setTextColor(TIME_COLOR, TFT_BLACK);
-  tft.setFreeFont(FONT_COLON);
-  // tft.drawChar(':', COLON_X_OFFSET - timeDigitsOffset, COLON_Y_OFFSET,
-  // GFXFF);
-  tft.drawChar(':', 50, 70, GFXFF);
-}
-
 void updateTimeDisplay() {
   updateHoursDisplay();
   updateMinutesDisplay();
-  // drawColon();
 }
 
 void updateHoursDisplay() {
@@ -542,10 +531,11 @@ void updateHoursDisplay() {
 }
 
 void updateMinutesDisplay() {
-  Serial.println("updateMinutesDisplay() called.");
-  Serial.print("offset: ");
-  Serial.println(timeDigitsOffset);
-
+  /*
+    Serial.println("updateMinutesDisplay() called.");
+    Serial.print("offset: ");
+    Serial.println(timeDigitsOffset);
+  */
   localTime = myTZ.toLocal(now());
 
   uint8_t tens = minute(localTime);
@@ -575,38 +565,41 @@ void updateMinutesDisplay() {
 
 void updateDateString() {
 
-  Serial.println("updateDateString() called.");
+  // Serial.println("updateDateString() called.");
 
   char tempBuffer[5];
   localTime = myTZ.toLocal(now());
 
-  strcpy(dateString, dayShortStr(weekday(localTime)));
-  strcat(dateString, ". ");
+  strcpy(dateString, dayStr(weekday(localTime)));
+  strcat(dateString, ", ");
   strcat(dateString, monthStr(month(localTime)));
   strcat(dateString, " ");
   strcat(dateString, itoa(day(localTime), tempBuffer, 10));
 
-  switch (day(localTime)) {
-  case 1:
-    strcat(dateString, "st ");
-    break;
-  case 2:
-    strcat(dateString, "nd ");
-    break;
-  case 3:
-    strcat(dateString, "rd ");
-    break;
-  default:
-    strcat(dateString, "th ");
-  }
+  
+    switch (day(localTime)) {
+    case 1:
+      strcat(dateString, "st ");
+      break;
+    case 2:
+      strcat(dateString, "nd ");
+      break;
+    case 3:
+      strcat(dateString, "rd ");
+      break;
+    default:
+      strcat(dateString, "th ");
+    }
+  
 
-  strcat(dateString, itoa(year(localTime), tempBuffer, 10));
+  // strcat(dateString, itoa(year(localTime), tempBuffer, 10));
 
+  Serial.print("---------------------------------------- Date string: ");
   Serial.println(dateString);
 }
 
 void updateDateDisplay() {
-  Serial.println("updateDateDisplay() called.");
+  // Serial.println("updateDateDisplay() called.");
   tft.setFreeFont(FONT_SMALL);
   tft.setViewport(0, VP_DATE_Y, VP_DATE_W, VP_DATE_H);
   tft.fillScreen(TFT_BLACK);
