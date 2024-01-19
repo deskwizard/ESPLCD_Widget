@@ -199,7 +199,7 @@ void drawStatic() {
   tft.drawFastHLine(0, BTM_LINE_Y + 1, DISP_W, H_LINE_COLOR);
   tft.drawFastHLine(0, BTM_LINE_Y + 2, DISP_W, H_LINE_COLOR);
 
-  drawColon();
+  // drawColon();
 }
 
 void updateWeatherDisplay() {
@@ -486,7 +486,6 @@ void updateMoonWarningDisplay() {
 
 void drawColon() {
 
-  return;
   // The ':' in the middle
   tft.setTextColor(TIME_COLOR, TFT_BLACK);
   tft.setFreeFont(FONT_COLON);
