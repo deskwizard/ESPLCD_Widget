@@ -7,6 +7,7 @@
 #include "defines.h"
 
 File pngfile;
+char imageFilename[80];
 PNG png;
 // Image coordinates used by pngDrawImage when drawing
 int16_t xpos = 0;
@@ -52,7 +53,7 @@ void setupDisplay() {
 
   drawStatic();
   updateMoonDisplay(29); ////////////////////////////////////////////////////
-  // updateWeatherDisplay();
+  updateWeatherDisplay();
   updateTimeDisplay();
   updateDateString();
   updateDateDisplay();
@@ -61,11 +62,16 @@ void setupDisplay() {
 #ifdef TEST_DISPLAY
   uint8_t id = 0;
 
-  updateWeatherIcon(true); // true = show center animation icon
+  // updateWeatherIcon(true); // true = show center animation icon
+  currentWeather.isDay = 1;
+  currentWeather.weatherCode = 2;
+  updateWeatherIcon();
 
   while (1) {
 
+#ifndef NO_ANIM
     animate();
+#endif
 
     /*
         id = 0;
@@ -108,16 +114,25 @@ void setupDisplay() {
       delay(beat_delay);
       id = id + 2;
     }
-
-    id = 0;
+*/
+ 
+    id = 2;
     currentWeather.isDay = 1;
     while (id < 4) {
       currentWeather.weatherCode = id;
       updateWeatherIcon();
-      delay(beat_delay);
+      delay(1000);
       id++;
     }
-*/
+ 
+    id = 61;
+    while (id <= 65) {
+      currentWeather.weatherCode = id;
+      updateWeatherIcon();
+      delay(1000);
+      id = id + 2;
+    }
+
     // delay(3000);
     // Serial.println("-------------------------------------------");
     // Serial.println();
@@ -198,8 +213,6 @@ void drawStatic() {
   tft.drawFastHLine(0, BTM_LINE_Y, DISP_W, H_LINE_COLOR);
   tft.drawFastHLine(0, BTM_LINE_Y + 1, DISP_W, H_LINE_COLOR);
   tft.drawFastHLine(0, BTM_LINE_Y + 2, DISP_W, H_LINE_COLOR);
-
-  // drawColon();
 }
 
 void updateWeatherDisplay() {
@@ -208,37 +221,56 @@ void updateWeatherDisplay() {
 
   tft.setViewport(VP_WEA_X, VP_WEA_Y, VP_WEA_W, VP_WEA_H);
 
-  // tft.fillScreen(TFT_BLUE);
   tft.fillScreen(TFT_BLACK);
+  // tft.fillScreen(TFT_BLUE);
 
   // tft.setTextColor(WEATHER_COLOR, TFT_NAVY);
   tft.setTextColor(WEATHER_COLOR, TFT_BLACK);
 
   if (currentWeather.fetchSuccess == 0) {
     tft.setFreeFont(FONT_SMALL);
-    snprintf(buffer, 50, "%.0f°C / %.0f°C    %d", currentWeather.temp,
-             currentWeather.feels, currentWeather.weatherCode);
+    snprintf(buffer, 50, "%.0f°C / %.0f°C", currentWeather.temp,
+             currentWeather.feels);
   } //
   else {
+    /*
+        xpos = 20;
+        ypos = 0;
+
+        snprintf(imageFilename, 80, "/weather/small/thermometer.png", index);
+
+        int16_t rc = png.open(imageFilename, pngOpen, pngClose, pngRead,
+       pngSeek, pngDrawImage);
+
+        if (rc == PNG_SUCCESS) {
+          tft.startWrite();
+
+          if (png.getWidth() > MAX_IMAGE_WIDTH) {
+            Serial.println("Image too wide for allocated line buffer size!");
+          } else {
+            rc = png.decode(NULL, 0);
+            png.close();
+          }
+          tft.endWrite();
+        }
+     */
     tft.setFreeFont(FONT_SMALL);
-
-    if (djph) {
-      tft.setTextColor(TFT_PINK, TFT_BLACK);
-      snprintf(buffer, 50, " 8===o~~");
-    }
-
-    // snprintf(buffer, 50, "Fetching...");
+    /*
+        if (djph) {
+          tft.setTextColor(TFT_PINK, TFT_BLACK);
+          snprintf(buffer, 50, " 8===o~~");
+        }
+     */
+    snprintf(buffer, 50, "Fetching...");
     //  TODO:  Shove the caution icon in here or something like that
   }
 
-  tft.drawString(buffer, 0, 0, GFXFF);
+  tft.drawString(buffer, 0, 16, GFXFF);
 
   tft.resetViewport();
 }
 
 void updateWeatherIcon(bool tiny) {
-
-  char imageFilename[80];
 
   if (tiny) {
     // Serial.println("tiny");
@@ -258,8 +290,9 @@ void updateWeatherIcon(bool tiny) {
   Serial.println(imageFilename);
 
   tft.setViewport(VP_WEA_ICON_X, VP_WEA_ICON_Y, VP_WEA_ICON_W, VP_WEA_ICON_H);
-  // tft.fillScreen(TFT_BLUE);
+
   tft.fillScreen(TFT_BLACK);
+  // tft.fillScreen(TFT_PURPLE);
 
   int16_t rc = png.open(imageFilename, pngOpen, pngClose, pngRead, pngSeek,
                         pngDrawImage);
@@ -287,7 +320,6 @@ void animateWeather() {
   // Currently has 42 frames per cycle (either moon or sun)
   static uint8_t currentFrame = 0;
   static bool iconSunOrMoon = true; // Sun = true, moon = false
-  char imageFilename[30];
 
   if (currentFrame == 0) {
     animXPos = ANIM_ORIGIN_X;
@@ -295,7 +327,7 @@ void animateWeather() {
   }
 
   // Load image
-  snprintf(imageFilename, 30, "/weather/small/%d.png", iconSunOrMoon);
+  snprintf(imageFilename, 80, "/weather/small/%d.png", iconSunOrMoon);
 
   int16_t rc =
       png.open(imageFilename, pngOpen, pngClose, pngRead, pngSeek, pngDrawAnim);
@@ -390,8 +422,6 @@ void handleBacklight() {
 
 void updateMoonDisplay(uint8_t index) {
 
-  char imageFilename[80];
-
   xpos = VP_MOON_ICON_X;
   ypos = VP_MOON_ICON_Y;
 
@@ -419,8 +449,6 @@ void updateMoonDisplay(uint8_t index) {
 
 void updateMoonWarningDisplay() {
 
-  char imageFilename[40];
-
   Serial.print("moon warning: ");
   Serial.println(moon.index);
 
@@ -439,19 +467,19 @@ void updateMoonWarningDisplay() {
   case 16:
   case 27:
   case 1:
-    snprintf(imageFilename, 40, "/other/small/%s", "caution.png");
+    snprintf(imageFilename, 80, "/other/small/%s", "caution.png");
     break;
 
   case 13:
   case 15:
   case 28:
   case 0:
-    snprintf(imageFilename, 40, "/other/small/%s", "warning.png");
+    snprintf(imageFilename, 80, "/other/small/%s", "warning.png");
     break;
 
   case 14:
   case 29:
-    snprintf(imageFilename, 40, "/other/small/%s", "alert.png");
+    snprintf(imageFilename, 80, "/other/small/%s", "alert.png");
     break;
 
   default:
@@ -576,26 +604,25 @@ void updateDateString() {
   strcat(dateString, " ");
   strcat(dateString, itoa(day(localTime), tempBuffer, 10));
 
-  
-    switch (day(localTime)) {
-    case 1:
-      strcat(dateString, "st ");
-      break;
-    case 2:
-      strcat(dateString, "nd ");
-      break;
-    case 3:
-      strcat(dateString, "rd ");
-      break;
-    default:
-      strcat(dateString, "th ");
-    }
-  
+  switch (day(localTime)) {
+  case 1:
+    strcat(dateString, "st ");
+    break;
+  case 2:
+    strcat(dateString, "nd ");
+    break;
+  case 3:
+    strcat(dateString, "rd ");
+    break;
+  default:
+    strcat(dateString, "th ");
+  }
 
   // strcat(dateString, itoa(year(localTime), tempBuffer, 10));
-
-  Serial.print("---------------------------------------- Date string: ");
-  Serial.println(dateString);
+  /*
+    Serial.print("---------------------------------------- Date string: ");
+    Serial.println(dateString);
+  */
 }
 
 void updateDateDisplay() {

@@ -76,15 +76,15 @@
 #define MOON_WARNING_Y 16
 
 #define VP_WEA_X 200
-#define VP_WEA_Y 15
+#define VP_WEA_Y 0
 #define VP_WEA_W 120
-#define VP_WEA_H 28
-#define VP_WEA_ICON_X (VP_WEA_X - 65)
+#define VP_WEA_H 48
+#define VP_WEA_ICON_X (VP_WEA_X - 70)
 #define VP_WEA_ICON_Y 0
 #define VP_WEA_ICON_H 50
 #define VP_WEA_ICON_W 65
 #define WEA_ICON_X 0
-#define WEA_ICON_Y 0
+#define WEA_ICON_Y 3
 #define WEATHER_COLOR TFT_SKYBLUE
 
 // The custom font file attached to this sketch must be included
