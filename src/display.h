@@ -36,7 +36,7 @@
 #define CDS_READ_RATE 50
 #define PWM_MINIMUM 950 // PWM is inverted!
 
-#define ANIMATION_START_DELAY (20 * 1000);
+#define ANIMATION_START_DELAY (10 * 1000);
 
 // Moon animation
 #define MOON_ANIM_FR 150

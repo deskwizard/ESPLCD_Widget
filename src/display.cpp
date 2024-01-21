@@ -52,11 +52,13 @@ void setupDisplay() {
   // tft.fillScreen(TFT_PURPLE);
 
   drawStatic();
-  updateMoonDisplay(29); ////////////////////////////////////////////////////
-  updateWeatherDisplay();
   updateTimeDisplay();
   updateDateString();
   updateDateDisplay();
+
+  updateMoonDisplay(29); ////////////////////////////////////////////////////
+
+  updateWeatherDisplay();
   updateWeatherIcon(true); // true = show center animation icon
 
 #ifdef TEST_DISPLAY
@@ -115,8 +117,17 @@ void setupDisplay() {
       id = id + 2;
     }
 */
- 
-    id = 2;
+
+    id = 0;
+    currentWeather.isDay = 0;
+    while (id < 4) {
+      currentWeather.weatherCode = id;
+      updateWeatherIcon();
+      delay(1000);
+      id++;
+    }
+
+    id = 0;
     currentWeather.isDay = 1;
     while (id < 4) {
       currentWeather.weatherCode = id;
@@ -124,9 +135,17 @@ void setupDisplay() {
       delay(1000);
       id++;
     }
- 
+
     id = 61;
     while (id <= 65) {
+      currentWeather.weatherCode = id;
+      updateWeatherIcon();
+      delay(1000);
+      id = id + 2;
+    }
+
+    id = 71;
+    while (id <= 75) {
       currentWeather.weatherCode = id;
       updateWeatherIcon();
       delay(1000);
@@ -327,7 +346,7 @@ void animateWeather() {
   }
 
   // Load image
-  snprintf(imageFilename, 80, "/weather/small/%d.png", iconSunOrMoon);
+  snprintf(imageFilename, 80, "/weather/small/anim/%d.png", iconSunOrMoon);
 
   int16_t rc =
       png.open(imageFilename, pngOpen, pngClose, pngRead, pngSeek, pngDrawAnim);
