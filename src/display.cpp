@@ -49,8 +49,9 @@ void setupDisplay() {
   tft.setRotation(3);
 
   tft.fillScreen(TFT_BLACK);
-  // tft.fillScreen(TFT_PURPLE);
+  // tft.fillScreen(TFT_DARKGREEN);
 
+#ifndef TEST_DISPLAY
   drawStatic();
   updateTimeDisplay();
   updateDateString();
@@ -61,100 +62,79 @@ void setupDisplay() {
   updateWeatherDisplay();
   updateWeatherIcon(true); // true = show center animation icon
 
-#ifdef TEST_DISPLAY
+#else
   uint8_t id = 0;
-
-  // updateWeatherIcon(true); // true = show center animation icon
-  currentWeather.isDay = 1;
-  currentWeather.weatherCode = 2;
-  updateWeatherIcon();
+  updateWeatherIcon(true); // true = show center animation icon
 
   while (1) {
 
 #ifndef NO_ANIM
     animate();
-#endif
+#else
 
-    /*
-        id = 0;
-        while (id < 30) {
-          moon.index = id;
-          updateMoonDisplay(id);
-          delay(100);
-          id++;
-        }
-
-            moon.index = 1;
-        updateMoonWarningDisplay();
-        delay(500);
-        moon.index = 0;
-        updateMoonWarningDisplay();
-        delay(500);
-        moon.index = 29;
-        updateMoonWarningDisplay();
-        delay(500);
-        moon.index = 2;
-        updateMoonWarningDisplay();
-        delay(500);
-
-         */
-
-    /*
+/*
     id = 0;
-    currentWeather.isDay = 0;
-    while (id < 4) {
-      currentWeather.weatherCode = id;
-      updateWeatherIcon();
-      delay(beat_delay);
+    while (id < 30) {
+      moon.index = id;
+      updateMoonDisplay(id);
+      delay(100);
       id++;
     }
 
-    id = 71;
-    while (id < 79) {
-      currentWeather.weatherCode = id;
-      updateWeatherIcon();
-      delay(beat_delay);
-      id = id + 2;
-    }
+        moon.index = 1;
+    updateMoonWarningDisplay();
+    delay(500);
+    moon.index = 0;
+    updateMoonWarningDisplay();
+    delay(500);
+    moon.index = 29;
+    updateMoonWarningDisplay();
+    delay(500);
+    moon.index = 2;
+    updateMoonWarningDisplay();
+    delay(500);
+
+     */
+
+/*
+   id = 0;
+   currentWeather.isDay = 0;
+   while (id < 4) {
+     currentWeather.weatherCode = id;
+     updateWeatherIcon();
+     delay(1000);
+     id++;
+   }
+
+   id = 0;
+   currentWeather.isDay = 1;
+   while (id < 4) {
+     currentWeather.weatherCode = id;
+     updateWeatherIcon();
+     delay(1000);
+     id++;
+   }
+
+   id = 61;
+   while (id <= 65) {
+     currentWeather.weatherCode = id;
+     updateWeatherIcon();
+     delay(1000);
+     id = id + 2;
+   }
+
+   id = 71;
+   while (id <= 77) {
+     currentWeather.weatherCode = id;
+     updateWeatherIcon();
+     delay(1000);
+     id = id + 2;
+   }
 */
-
-    id = 0;
-    currentWeather.isDay = 0;
-    while (id < 4) {
-      currentWeather.weatherCode = id;
-      updateWeatherIcon();
-      delay(1000);
-      id++;
-    }
-
-    id = 0;
-    currentWeather.isDay = 1;
-    while (id < 4) {
-      currentWeather.weatherCode = id;
-      updateWeatherIcon();
-      delay(1000);
-      id++;
-    }
-
-    id = 61;
-    while (id <= 65) {
-      currentWeather.weatherCode = id;
-      updateWeatherIcon();
-      delay(1000);
-      id = id + 2;
-    }
-
-    id = 71;
-    while (id <= 77) {
-      currentWeather.weatherCode = id;
-      updateWeatherIcon();
-      delay(1000);
-      id = id + 2;
-    }
-
-    // delay(3000);
-    // Serial.println("-------------------------------------------");
-    // Serial.println();
+// delay(3000);
+// Serial.println("-------------------------------------------");
+// Serial.println();
+#endif
   }
 #endif
 }
@@ -292,7 +272,6 @@ void updateWeatherDisplay() {
 void updateWeatherIcon(bool tiny) {
 
   if (tiny) {
-    // Serial.println("tiny");
     snprintf(imageFilename, 80, "/weather/small/anim/img.png");
     // Adjust location of the weather animation center image here
     // It needs adjustment when the image size changes (duh...).
@@ -305,8 +284,8 @@ void updateWeatherIcon(bool tiny) {
     ypos = WEA_ICON_Y;
   }
 
-  Serial.print("image filename: ");
-  Serial.println(imageFilename);
+  // Serial.print("image filename: ");
+  // Serial.println(imageFilename);
 
   tft.setViewport(VP_WEA_ICON_X, VP_WEA_ICON_Y, VP_WEA_ICON_W, VP_WEA_ICON_H);
 
@@ -318,10 +297,11 @@ void updateWeatherIcon(bool tiny) {
 
   if (rc == PNG_SUCCESS) {
     tft.startWrite();
-    Serial.printf("image specs: (%d x %d), %d bpp, pixel type: %d\n",
-                  png.getWidth(), png.getHeight(), png.getBpp(),
-                  png.getPixelType());
-
+    /*
+        Serial.printf("image specs: (%d x %d), %d bpp, pixel type: %d\n",
+                      png.getWidth(), png.getHeight(), png.getBpp(),
+                      png.getPixelType());
+     */
     if (png.getWidth() > MAX_IMAGE_WIDTH) {
       Serial.println("Image too wide for allocated line buffer size!");
     } else {
@@ -358,15 +338,12 @@ void animateWeather() {
   // tft.fillScreen(TFT_PURPLE); // Will erase the center icon, beware.
 
   animXPos = animXPos + 2;
-
-  // This could be reworked
-  if (currentFrame < 20 || currentFrame > 22) {
-    if (animXPos <= (ANIM_X_OFFSET - WEATHER_ANIM_ICON_SIZE)) {
-      animYPos--;
-    } else {
-      animYPos++;
-    }
-  }
+  if (currentFrame < 20) {
+    animYPos--;
+  } //
+  else if (currentFrame > 22) {
+    animYPos++;
+  } // Otherwise don't update Y coordinate
 
   tft.startWrite();
   rc = png.decode(NULL, 0);
@@ -383,10 +360,8 @@ void animateWeather() {
 
   tft.resetViewport();
 
-  /*
-    Serial.print("currentFrame: ");
-    Serial.println(currentFrame);
-  */
+  //  Serial.print("currentFrame: ");
+  //  Serial.println(currentFrame);
 
   // start over
   /*
@@ -467,10 +442,10 @@ void updateMoonDisplay(uint8_t index) {
 }
 
 void updateMoonWarningDisplay() {
-
-  Serial.print("moon warning: ");
-  Serial.println(moon.index);
-
+  /*
+    Serial.print("moon warning: ");
+    Serial.println(moon.index);
+   */
   switch (moon.index) {
 
   case 11:
@@ -516,11 +491,11 @@ void updateMoonWarningDisplay() {
 
   if (rc == PNG_SUCCESS) {
     tft.startWrite();
-
-    Serial.printf("image specs: (%d x %d), %d bpp, pixel type: %d\n",
-                  png.getWidth(), png.getHeight(), png.getBpp(),
-                  png.getPixelType());
-
+    /*
+        Serial.printf("image specs: (%d x %d), %d bpp, pixel type: %d\n",
+                      png.getWidth(), png.getHeight(), png.getBpp(),
+                      png.getPixelType());
+     */
     if (png.getWidth() > MAX_IMAGE_WIDTH) {
       Serial.println("Image too wide for allocated line buffer size!");
     } else {
