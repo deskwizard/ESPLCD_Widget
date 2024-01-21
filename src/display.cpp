@@ -145,7 +145,7 @@ void setupDisplay() {
     }
 
     id = 71;
-    while (id <= 75) {
+    while (id <= 77) {
       currentWeather.weatherCode = id;
       updateWeatherIcon();
       delay(1000);
@@ -293,7 +293,7 @@ void updateWeatherIcon(bool tiny) {
 
   if (tiny) {
     // Serial.println("tiny");
-    snprintf(imageFilename, 80, "/weather/small/anim_img.png");
+    snprintf(imageFilename, 80, "/weather/small/anim/img.png");
     // Adjust location of the weather animation center image here
     // It needs adjustment when the image size changes (duh...).
     xpos = 7;

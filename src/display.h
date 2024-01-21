@@ -69,7 +69,7 @@
 #define DATE_COLOR TFT_SKYBLUE
 
 #define VP_MOON_ICON_X 35
-#define VP_MOON_ICON_Y 8
+#define VP_MOON_ICON_Y 7
 #define VP_MOON_ICON_W 40
 #define VP_MOON_ICON_H 38
 #define MOON_WARNING_X 5
