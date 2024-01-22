@@ -1,19 +1,23 @@
 // https://www.codeproject.com/Articles/5336116/Img2Cpp-Create-Cplusplus-Headers-for-Embedding-Ima
 // https://notisrac.github.io/FileToCArray/
 
+// Color calculator:
+// http://www.rinkydinkelectronics.com/calc_rgb565.php
+
 /******** WARNING: INCLUDE ORDER MATTERS !!! ********/
 #include "display.h"
 #include "datasources.h"
 #include "defines.h"
 
-File pngfile;
 char imageFilename[80];
+File pngfile;
 PNG png;
 // Image coordinates used by pngDrawImage when drawing
-int16_t xpos = 0;
-int16_t ypos = 0;
+int16_t pngPosX = 0;
+int16_t pngPosY = 0;
 
 TFT_eSPI tft = TFT_eSPI();
+TFT_eSprite spriteTH = TFT_eSprite(&tft);
 
 extern time_t localTime;
 extern Timezone myTZ;
@@ -51,6 +55,8 @@ void setupDisplay() {
   tft.fillScreen(TFT_BLACK);
   // tft.fillScreen(TFT_DARKGREEN);
 
+  buildSprites();
+
 #ifndef TEST_DISPLAY
   drawStatic();
   updateTimeDisplay();
@@ -61,8 +67,8 @@ void setupDisplay() {
 
   updateWeatherDisplay();
   updateWeatherIcon(true); // true = show center animation icon
-
 #else
+  updateWeatherDisplay();
   uint8_t id = 0;
   updateWeatherIcon(true); // true = show center animation icon
 
@@ -137,6 +143,17 @@ void setupDisplay() {
 #endif
   }
 #endif
+}
+
+void buildSprites() {
+  // Thermometer sprite
+  spriteTH.setColorDepth(8); // default = 16
+  spriteTH.createSprite(SPR_TH_W, SPR_TH_H);
+  spriteTH.fillScreen(TFT_BLACK);
+  spriteTH.fillRoundRect(2, 0, 9, 45, 4, TFT_LIGHTORANGE);
+  spriteTH.fillCircle(6, 42, 6, TFT_LIGHTORANGE);
+  spriteTH.fillRect(4, 7, 5, 20, TFT_RED);
+  spriteTH.fillRect(4, 27, 5, 18, TFT_BLUE);
 }
 
 void handleDisplay() {
@@ -223,48 +240,31 @@ void updateWeatherDisplay() {
   tft.fillScreen(TFT_BLACK);
   // tft.fillScreen(TFT_BLUE);
 
-  // tft.setTextColor(WEATHER_COLOR, TFT_NAVY);
-  tft.setTextColor(WEATHER_COLOR, TFT_BLACK);
+  // TODO: Move that out of here somehow
+  spriteTH.pushSprite(VP_WEA_W - 13, 4);
+
+  tft.setTextColor(WEATHER_TEXT_COLOR, TFT_BLACK);
 
   if (currentWeather.fetchSuccess == 0) {
+    tft.setTextDatum(TR_DATUM);
     tft.setFreeFont(FONT_SMALL);
-    snprintf(buffer, 50, "%.0f°C / %.0f°C", currentWeather.temp,
-             currentWeather.feels);
+    snprintf(buffer, 50, "%.0f C", currentWeather.temp);
+    tft.drawString(buffer, VP_WEA_W / 2, 7, GFXFF);
+    snprintf(buffer, 50, "%.0f C", currentWeather.feels);
+    tft.drawString(buffer, VP_WEA_W / 2, 32, GFXFF);
+    tft.setTextDatum(TL_DATUM);
   } //
   else {
-    /*
-        xpos = 20;
-        ypos = 0;
+    //  TODO:  Shove the caution icon in here or something like that instead
 
-        snprintf(imageFilename, 80, "/weather/small/thermometer.png", index);
-
-        int16_t rc = png.open(imageFilename, pngOpen, pngClose, pngRead,
-       pngSeek, pngDrawImage);
-
-        if (rc == PNG_SUCCESS) {
-          tft.startWrite();
-
-          if (png.getWidth() > MAX_IMAGE_WIDTH) {
-            Serial.println("Image too wide for allocated line buffer size!");
-          } else {
-            rc = png.decode(NULL, 0);
-            png.close();
-          }
-          tft.endWrite();
-        }
-     */
     tft.setFreeFont(FONT_SMALL);
-    /*
-        if (djph) {
-          tft.setTextColor(TFT_PINK, TFT_BLACK);
-          snprintf(buffer, 50, " 8===o~~");
-        }
-     */
-    snprintf(buffer, 50, "Fetching...");
-    //  TODO:  Shove the caution icon in here or something like that
+    snprintf(buffer, 50, " No ");
+    tft.drawString(buffer, 20, 7, GFXFF);
+    snprintf(buffer, 50, "data");
+    tft.drawString(buffer, 20, 32, GFXFF);
   }
 
-  tft.drawString(buffer, 0, 16, GFXFF);
+  //
 
   tft.resetViewport();
 }
@@ -275,13 +275,13 @@ void updateWeatherIcon(bool tiny) {
     snprintf(imageFilename, 80, "/weather/small/anim/img.png");
     // Adjust location of the weather animation center image here
     // It needs adjustment when the image size changes (duh...).
-    xpos = 7;
-    ypos = 26;
+    pngPosX = 7;
+    pngPosY = 26;
   } else {
     snprintf(imageFilename, 80, "/weather/small/%d/%d.png",
              currentWeather.isDay, currentWeather.weatherCode);
-    xpos = WEA_ICON_X;
-    ypos = WEA_ICON_Y;
+    pngPosX = WEA_ICON_X;
+    pngPosY = WEA_ICON_Y;
   }
 
   // Serial.print("image filename: ");
@@ -416,8 +416,8 @@ void handleBacklight() {
 
 void updateMoonDisplay(uint8_t index) {
 
-  xpos = VP_MOON_ICON_X;
-  ypos = VP_MOON_ICON_Y;
+  pngPosX = VP_MOON_ICON_X;
+  pngPosY = VP_MOON_ICON_Y;
 
   snprintf(imageFilename, 80, "/moon/small/%d.png", index);
 
@@ -480,8 +480,8 @@ void updateMoonWarningDisplay() {
     return; // Nothing to do for the other days
   }
 
-  xpos = MOON_WARNING_X;
-  ypos = MOON_WARNING_Y;
+  pngPosX = MOON_WARNING_X;
+  pngPosY = MOON_WARNING_Y;
 
   Serial.print("image filename: ");
   Serial.println(imageFilename);
@@ -521,7 +521,7 @@ void updateHoursDisplay() {
   tens = (tens / 10) % 10;
 
   tft.setFreeFont(FONT_TIME);
-  tft.setTextColor(TIME_COLOR, TFT_BLACK);
+  tft.setTextColor(TIME_TEXT_COLOR, TFT_BLACK);
 
   // TViewports
   tft.setViewport(VP_TIME_X, VP_TIME_Y, VP_TIME_W, VP_TIME_H);
@@ -567,7 +567,7 @@ void updateMinutesDisplay() {
 
   tft.setFreeFont(FONT_TIME);
 
-  tft.setTextColor(TIME_COLOR, TFT_BLACK);
+  tft.setTextColor(TIME_TEXT_COLOR2, TFT_BLACK);
 
   tft.setViewport((DISP_W - (VP_TIME_W * 2)) - timeDigitsOffset, VP_TIME_Y,
                   VP_TIME_W, VP_TIME_H);
@@ -624,7 +624,7 @@ void updateDateDisplay() {
   tft.setFreeFont(FONT_SMALL);
   tft.setViewport(0, VP_DATE_Y, VP_DATE_W, VP_DATE_H);
   tft.fillScreen(TFT_BLACK);
-  tft.setTextColor(DATE_COLOR, TFT_BLACK);
+  tft.setTextColor(DATE_TEXT_COLOR, TFT_BLACK);
   tft.drawCentreString(dateString, 160, 0, GFXFF);
   tft.resetViewport();
 }
@@ -639,7 +639,7 @@ void updateDateDisplay() {
 void pngDrawImage(PNGDRAW *pDraw) {
   uint16_t lineBuffer[MAX_IMAGE_WIDTH];
   png.getLineAsRGB565(pDraw, lineBuffer, PNG_RGB565_BIG_ENDIAN, 0xffffffff);
-  tft.pushImage(xpos, ypos + pDraw->y, pDraw->iWidth, 1, lineBuffer);
+  tft.pushImage(pngPosX, pngPosY + pDraw->y, pDraw->iWidth, 1, lineBuffer);
 }
 
 void pngDrawAnim(PNGDRAW *pDraw) {

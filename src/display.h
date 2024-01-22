@@ -34,9 +34,9 @@
 #define CDS_PIN 34
 #define CDS_AVG_COUNT 50
 #define CDS_READ_RATE 50
-#define PWM_MINIMUM 950 // PWM is inverted!
+#define PWM_MINIMUM 980 // PWM is inverted!
 
-#define ANIMATION_START_DELAY (10 * 1000);
+#define ANIMATION_START_DELAY (11 * 1000);
 
 // Moon animation
 #define MOON_ANIM_FR 150
@@ -49,48 +49,61 @@
 #define ANIM_ORIGIN_Y (VP_WEA_ICON_H - WEATHER_ANIM_ICON_SIZE - 10)
 #define ANIM_X_OFFSET 180
 
+// Custom Colours
+#define TFT_LIGHTORANGE 0xFC60
+#define TFT_DARKORANGE 0xFB00
+#define TFT_LIGHTBLUE
+
+// UI Colours
+#define H_LINE_COLOR TFT_DARKORANGE
+#define TIME_TEXT_COLOR TFT_LIGHTORANGE
+#define TIME_TEXT_COLOR2 TFT_LIGHTORANGE
+#define DATE_TEXT_COLOR TFT_LIGHTORANGE
+#define WEATHER_TEXT_COLOR TFT_LIGHTORANGE
+
 // Static items
 #define COLON_X_OFFSET 150
 #define COLON_Y_OFFSET (VP_TIME_Y + 80)
-#define TOP_LINE_Y (VP_TIME_Y - 13)
-#define BTM_LINE_Y (VP_TIME_Y + 125)
-#define H_LINE_COLOR TFT_DARKCYAN
+#define TOP_LINE_Y (VP_TIME_Y - 10)
+#define BTM_LINE_Y (VP_TIME_Y + 122)
 
 // Viewports
 #define VP_TIME_X 0
-#define VP_TIME_Y 68
+#define VP_TIME_Y 75
 #define VP_TIME_W 75
 #define VP_TIME_H 110
-#define TIME_COLOR TFT_GOLD
 
-#define VP_DATE_Y (BTM_LINE_Y + 16)
+#define VP_DATE_Y (BTM_LINE_Y + 15)
 #define VP_DATE_W 320
 #define VP_DATE_H 60
-#define DATE_COLOR TFT_SKYBLUE
 
 #define VP_MOON_ICON_X 35
-#define VP_MOON_ICON_Y 7
+#define VP_MOON_ICON_Y 12
 #define VP_MOON_ICON_W 40
 #define VP_MOON_ICON_H 38
 #define MOON_WARNING_X 5
 #define MOON_WARNING_Y 16
 
-#define VP_WEA_X 200
+#define VP_WEA_X 180
 #define VP_WEA_Y 0
-#define VP_WEA_W 120
-#define VP_WEA_H 48
-#define VP_WEA_ICON_X (VP_WEA_X - 70)
+#define VP_WEA_W 140
+#define VP_WEA_H 58
+#define VP_WEA_ICON_X (VP_WEA_X - 65)
 #define VP_WEA_ICON_Y 0
 #define VP_WEA_ICON_H 50
-#define VP_WEA_ICON_W 65
+#define VP_WEA_ICON_W 56
 #define WEA_ICON_X 0
-#define WEA_ICON_Y 3
-#define WEATHER_COLOR TFT_SKYBLUE
+#define WEA_ICON_Y 10
 
-// The custom font file attached to this sketch must be included
+// The custom fonts file attached to this sketch must be included
 #define GFXFF 1 // Stock font and GFXFF reference handle
 
+// Sprites
+#define SPR_TH_W 13
+#define SPR_TH_H 50
+
 void setupDisplay();
+void buildSprites();
 void handleDisplay();
 void animate();
 void handleBacklight();
