@@ -10,6 +10,9 @@
 
 #define LED_DEBUG 4
 
+#define PIN_SCL 27
+#define PIN_SDA 26
+
 void blink();
 void handleSerial();
 

@@ -11,7 +11,7 @@ void setup() {
 
   pinMode(LED_DEBUG, OUTPUT);
 
-  Wire.begin(32, 33); // SCL - SDA
+  Wire.begin(PIN_SDA, PIN_SCL);
   Serial.begin(115200);
   delay(1000);
   Serial.println("\nHellord");
