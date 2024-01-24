@@ -6,7 +6,7 @@
 WiFiClientSecure client;
 HTTPClient http;
 
-uint32_t unixTime = 1904249932; // Debug
+// uint32_t unixTime = 1904249932; // Debug
 
 void handleDataSources();
 void updateDataSources();
@@ -76,7 +76,7 @@ void updateMoonData() {
 
   client.setInsecure();
 
-  snprintf(fetchURL, BUF_SIZE, URL_BASE_MOON "%u", unixTime);
+  snprintf(fetchURL, BUF_SIZE, URL_BASE_MOON "%u", now());
 
   /* Reply from API:
     [{"Error":0,"ErrorMsg":"success","TargetDate":"154451241564","Moon":["Planting
