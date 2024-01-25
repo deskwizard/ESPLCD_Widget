@@ -44,7 +44,6 @@ void setupDisplay() {
   ledcAttachPin(TFT_BACKLIGHT, PWM1_CH);
   ledcSetup(PWM1_CH, PWM1_FREQ, PWM1_RES);
 
-  // TODO: Preload brightness and adjust ASAP
   for (int8_t x; x <= CDS_AVG_COUNT; x++) {
     handleBacklight();
   }
@@ -70,7 +69,9 @@ void setupDisplay() {
 #else
   updateWeatherDisplay();
   uint8_t id = 0;
+  currentWeather.weatherCode = 3;
   updateWeatherIcon(true); // true = show center animation icon
+  updateWeatherIcon();
 
   while (1) {
 
@@ -235,36 +236,48 @@ void updateWeatherDisplay() {
 
   char buffer[50];
 
-  tft.setViewport(VP_WEA_X, VP_WEA_Y, VP_WEA_W, VP_WEA_H);
+  tft.setViewport(VP_WEA_X1, VP_WEA_Y, VP_WEA_W, VP_WEA_H);
 
   tft.fillScreen(TFT_BLACK);
   // tft.fillScreen(TFT_BLUE);
 
-  // TODO: Move that out of here somehow
-  spriteTH.pushSprite(VP_WEA_W - 13, 4);
-
   tft.setTextColor(WEATHER_TEXT_COLOR, TFT_BLACK);
 
+  //spriteTH.pushSprite(VP_WEA_W - 17, 4); /////////////////////////
+
   if (currentWeather.fetchSuccess == 0) {
+
     tft.setTextDatum(TR_DATUM);
     tft.setFreeFont(FONT_SMALL);
     snprintf(buffer, 50, "%.0f C", currentWeather.temp);
-    tft.drawString(buffer, VP_WEA_W / 2, 7, GFXFF);
+    tft.drawString(buffer, VP_WEA_W - 10, 7, GFXFF);
     snprintf(buffer, 50, "%.0f C", currentWeather.feels);
-    tft.drawString(buffer, VP_WEA_W / 2, 32, GFXFF);
+    tft.drawString(buffer, VP_WEA_W - 10, 32, GFXFF);
     tft.setTextDatum(TL_DATUM);
   } //
   else {
     //  TODO:  Shove the caution icon in here or something like that instead
-
+/* 
     tft.setFreeFont(FONT_SMALL);
     snprintf(buffer, 50, " No ");
     tft.drawString(buffer, 20, 7, GFXFF);
     snprintf(buffer, 50, "data");
     tft.drawString(buffer, 20, 32, GFXFF);
+     */
   }
+  tft.resetViewport();
 
-  //
+  tft.setViewport(VP_WEA_X2, VP_WEA_Y, VP_WEA_W, VP_WEA_H);
+  tft.fillScreen(TFT_BLACK);
+  tft.fillScreen(TFT_DARKGREY);
+  tft.setFreeFont(FONT_SMALL);
+  //spriteTH.pushSprite(VP_WEA_W - 13, 4);
+  /*
+    snprintf(buffer, 50, " Atad ");
+    tft.drawString(buffer, 20, 7, GFXFF);
+    snprintf(buffer, 50, "On");
+    tft.drawString(buffer, 20, 32, GFXFF);
+   */
 
   tft.resetViewport();
 }
@@ -291,6 +304,8 @@ void updateWeatherIcon(bool tiny) {
 
   tft.fillScreen(TFT_BLACK);
   // tft.fillScreen(TFT_PURPLE);
+
+  // return; //////////////////////////////////////////////////////////////
 
   int16_t rc = png.open(imageFilename, pngOpen, pngClose, pngRead, pngSeek,
                         pngDrawImage);

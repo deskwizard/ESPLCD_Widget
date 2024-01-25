@@ -27,11 +27,11 @@
 #define DISP_H 240
 #define MAX_IMAGE_WIDTH 300
 
-#define TFT_BACKLIGHT 5
+#define TFT_BACKLIGHT 17
 #define PWM1_CH 0
 #define PWM1_RES 10
 #define PWM1_FREQ 1000
-#define CDS_PIN 34
+#define CDS_PIN 35
 #define CDS_AVG_COUNT 50
 #define CDS_READ_RATE 50
 #define PWM_MINIMUM 980 // PWM is inverted!
@@ -52,12 +52,11 @@
 // Custom Colours
 #define TFT_LIGHTORANGE 0xFC60
 #define TFT_DARKORANGE 0xFB00
-#define TFT_LIGHTBLUE
 
 // UI Colours
-#define H_LINE_COLOR TFT_DARKORANGE
-#define TIME_TEXT_COLOR TFT_LIGHTORANGE
-#define TIME_TEXT_COLOR2 TFT_LIGHTORANGE
+#define H_LINE_COLOR TFT_DARKCYAN
+#define TIME_TEXT_COLOR TFT_ORANGE
+#define TIME_TEXT_COLOR2 TIME_TEXT_COLOR
 #define DATE_TEXT_COLOR TFT_LIGHTORANGE
 #define WEATHER_TEXT_COLOR TFT_LIGHTORANGE
 
@@ -78,20 +77,22 @@
 #define VP_DATE_H 60
 
 #define VP_MOON_ICON_X 35
-#define VP_MOON_ICON_Y 12
+#define VP_MOON_ICON_Y 13
 #define VP_MOON_ICON_W 40
 #define VP_MOON_ICON_H 38
 #define MOON_WARNING_X 5
-#define MOON_WARNING_Y 16
+#define MOON_WARNING_Y 21
 
-#define VP_WEA_X 180
+#define VP_WEA_X1 100
+#define VP_WEA_X2 (VP_WEA_X1 + VP_WEA_W + VP_WEA_ICON_W)
 #define VP_WEA_Y 0
-#define VP_WEA_W 140
+#define VP_WEA_W 80
 #define VP_WEA_H 58
-#define VP_WEA_ICON_X (VP_WEA_X - 65)
+
+#define VP_WEA_ICON_X (VP_WEA_X1 + VP_WEA_W)
 #define VP_WEA_ICON_Y 0
 #define VP_WEA_ICON_H 50
-#define VP_WEA_ICON_W 56
+#define VP_WEA_ICON_W 60
 #define WEA_ICON_X 0
 #define WEA_ICON_Y 10
 
