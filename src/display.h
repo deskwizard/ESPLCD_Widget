@@ -120,6 +120,7 @@ void updateHoursDisplay();
 void updateMinutesDisplay();
 void updateDateString();
 void updateDateDisplay();
+int16_t roundFloat(float ftoi);
 
 //=========================================v==========================================
 //                                      pngDraw

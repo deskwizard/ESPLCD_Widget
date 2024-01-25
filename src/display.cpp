@@ -236,50 +236,38 @@ void updateWeatherDisplay() {
 
   char buffer[50];
 
-  tft.setViewport(VP_WEA_X1, VP_WEA_Y, VP_WEA_W, VP_WEA_H);
-
-  tft.fillScreen(TFT_BLACK);
-  // tft.fillScreen(TFT_BLUE);
-
+  // We have 2 viewports so set these beforehand
   tft.setTextColor(WEATHER_TEXT_COLOR, TFT_BLACK);
+  tft.setTextDatum(TR_DATUM);
+  tft.setFreeFont(FONT_SMALL);
 
-  //spriteTH.pushSprite(VP_WEA_W - 17, 4); /////////////////////////
+  tft.setViewport(VP_WEA_X1, VP_WEA_Y, VP_WEA_W, VP_WEA_H);
+  tft.fillScreen(TFT_BLACK);
+
+  // tft.fillScreen(TFT_BLUE);
+  //  spriteTH.pushSprite(VP_WEA_W - 17, 4); /////////////////////////
 
   if (currentWeather.fetchSuccess == 0) {
-
-    tft.setTextDatum(TR_DATUM);
-    tft.setFreeFont(FONT_SMALL);
-    snprintf(buffer, 50, "%.0f C", currentWeather.temp);
+    snprintf(buffer, 50, "%d C", roundFloat(currentWeather.temp));
+    // snprintf(buffer, 50, "%.0f C", currentWeather.temp);
     tft.drawString(buffer, VP_WEA_W - 10, 7, GFXFF);
-    snprintf(buffer, 50, "%.0f C", currentWeather.feels);
+
+    snprintf(buffer, 50, "%d C", roundFloat(currentWeather.feels));
+    // snprintf(buffer, 50, "%.0f C", currentWeather.feels);
     tft.drawString(buffer, VP_WEA_W - 10, 32, GFXFF);
-    tft.setTextDatum(TL_DATUM);
+
   } //
   else {
-    //  TODO:  Shove the caution icon in here or something like that instead
-/* 
-    tft.setFreeFont(FONT_SMALL);
-    snprintf(buffer, 50, " No ");
-    tft.drawString(buffer, 20, 7, GFXFF);
-    snprintf(buffer, 50, "data");
-    tft.drawString(buffer, 20, 32, GFXFF);
-     */
   }
   tft.resetViewport();
 
   tft.setViewport(VP_WEA_X2, VP_WEA_Y, VP_WEA_W, VP_WEA_H);
   tft.fillScreen(TFT_BLACK);
   tft.fillScreen(TFT_DARKGREY);
-  tft.setFreeFont(FONT_SMALL);
-  //spriteTH.pushSprite(VP_WEA_W - 13, 4);
-  /*
-    snprintf(buffer, 50, " Atad ");
-    tft.drawString(buffer, 20, 7, GFXFF);
-    snprintf(buffer, 50, "On");
-    tft.drawString(buffer, 20, 32, GFXFF);
-   */
 
   tft.resetViewport();
+
+  tft.setTextDatum(TL_DATUM);
 }
 
 void updateWeatherIcon(bool tiny) {
@@ -642,6 +630,15 @@ void updateDateDisplay() {
   tft.setTextColor(DATE_TEXT_COLOR, TFT_BLACK);
   tft.drawCentreString(dateString, 160, 0, GFXFF);
   tft.resetViewport();
+}
+
+int16_t roundFloat(float ftoi) {
+  if (ftoi < 0.0) {
+    return int16_t(ftoi - 0.5);
+  } //
+  else {
+    return int16_t(ftoi + 0.5);
+  }
 }
 
 //=========================================v==========================================
