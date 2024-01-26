@@ -64,7 +64,7 @@ void setupDisplay() {
 
   updateMoonDisplay(29); ////////////////////////////////////////////////////
 
-  updateWeatherDisplay();
+  updateCurrentWeatherDisplay();
   updateWeatherIcon(true); // true = show center animation icon
 #else
   updateWeatherDisplay();
@@ -232,7 +232,7 @@ void drawStatic() {
   tft.drawFastHLine(0, BTM_LINE_Y + 2, DISP_W, H_LINE_COLOR);
 }
 
-void updateWeatherDisplay() {
+void updateCurrentWeatherDisplay() {
 
   char buffer[50];
 
@@ -241,32 +241,31 @@ void updateWeatherDisplay() {
   tft.setTextDatum(TR_DATUM);
   tft.setFreeFont(FONT_SMALL);
 
-  tft.setViewport(VP_WEA_X1, VP_WEA_Y, VP_WEA_W, VP_WEA_H);
-  tft.fillScreen(TFT_BLACK);
-
-  // tft.fillScreen(TFT_BLUE);
   //  spriteTH.pushSprite(VP_WEA_W - 17, 4); /////////////////////////
 
   if (currentWeather.fetchSuccess == 0) {
+
+    tft.setViewport(VP_WEA_X1, VP_WEA_Y, VP_WEA_W, VP_WEA_H);
+
+    tft.fillScreen(TFT_BLACK);
+    // tft.fillScreen(TFT_BLUE);
+
     snprintf(buffer, 50, "%d C", roundFloat(currentWeather.temp));
-    // snprintf(buffer, 50, "%.0f C", currentWeather.temp);
     tft.drawString(buffer, VP_WEA_W - 10, 7, GFXFF);
 
     snprintf(buffer, 50, "%d C", roundFloat(currentWeather.feels));
-    // snprintf(buffer, 50, "%.0f C", currentWeather.feels);
     tft.drawString(buffer, VP_WEA_W - 10, 32, GFXFF);
-
+    tft.resetViewport();
+    
   } //
   else {
   }
-  tft.resetViewport();
-
+/* 
   tft.setViewport(VP_WEA_X2, VP_WEA_Y, VP_WEA_W, VP_WEA_H);
   tft.fillScreen(TFT_BLACK);
   tft.fillScreen(TFT_DARKGREY);
-
   tft.resetViewport();
-
+ */
   tft.setTextDatum(TL_DATUM);
 }
 

@@ -219,7 +219,7 @@ void updateWeatherData() {
     Serial.println();
 
     updateWeatherIcon();
-    updateWeatherDisplay();
+    updateCurrentWeatherDisplay();
 
   } //
   else {
