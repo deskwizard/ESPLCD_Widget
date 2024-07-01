@@ -8,6 +8,9 @@
 #define BUF_SIZE 400 // Buffer size
 #define FETCH_OK 0
 #define DATA_UPDATE_INTERVAL (MINUTES_TO_MS * 15)
+#define DATA_RETRY_INTERVAL (MINUTES_TO_MS * 5)
+
+#define FETCH_FAIL 42
 
 ////////////////////////////// Weather //////////////////////////////
 #define URL_BASE_WEATHER                                                       \
@@ -17,7 +20,7 @@
 
 struct weatherData {
   uint8_t weatherCode;
-  float temp;
+  float temperature;
   float feels;
   float precipitation;
   uint8_t cloudCover;
@@ -25,7 +28,7 @@ struct weatherData {
   uint16_t windDir;
   uint8_t humidity;
   bool isDay;
-  uint8_t fetchSuccess = 42; // 0 = no errors
+  uint8_t fetchSuccess = FETCH_FAIL; // 0 = no errors
 };
 
 extern struct weatherData currentWeather;
@@ -39,13 +42,25 @@ struct moonData {
   float age;
   float illumination;
   uint8_t index;
-  uint8_t fetchSuccess = 42; // 0 = no errors
+  uint8_t fetchSuccess = FETCH_FAIL; // 0 = no errors
 };
 extern struct moonData moon;
 
+//////////////////////////// Sensors /////////////////////////////
+struct sensorData {
+  float temperature;
+  float pressure;
+  uint8_t humidity;
+  uint8_t fetchSuccess = FETCH_FAIL; // 0 = no errors
+};
+
+extern struct sensorData localSensor;
+
+//////////////////////////////////////////////////////////////////
+void setupDataSources();
 void handleDataSources();
-void updateDataSources();
+
 void updateWeatherData();
 void updateMoonData();
-
+void updateLocalSensorData();
 #endif

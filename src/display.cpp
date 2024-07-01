@@ -250,7 +250,7 @@ void updateCurrentWeatherDisplay() {
     tft.fillScreen(TFT_BLACK);
     // tft.fillScreen(TFT_BLUE);
 
-    snprintf(buffer, 50, "%d C", roundFloat(currentWeather.temp));
+    snprintf(buffer, 50, "%d C", roundFloat(currentWeather.temperature));
     tft.drawString(buffer, VP_WEA_W - 10, 7, GFXFF);
 
     snprintf(buffer, 50, "%d C", roundFloat(currentWeather.feels));

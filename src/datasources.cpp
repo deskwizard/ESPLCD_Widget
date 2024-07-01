@@ -1,7 +1,20 @@
+
+/*
+
+     Remote = MQTT local
+     Local = onboard
+     External = internet stuff
+
+     Fetch internet stuff on SBC instead ??
+
+*/
 #include "datasources.h"
 #include "defines.h"
 #include "display.h"
 #include "network.h"
+#include <HTU2xD_SHT2x_Si70xx.h>
+
+HTU2xD_SHT2x_SI70xx ht2x(HTU2xD_SENSOR, HUMD_11BIT_TEMP_11BIT); // sensor type, resolution
 
 WiFiClientSecure client;
 HTTPClient http;
@@ -11,21 +24,32 @@ HTTPClient http;
 void handleDataSources();
 void updateDataSources();
 
-char fetchURL[BUF_SIZE]; // Buffer for working on JSON
+char fetchURL[BUF_SIZE]; // JSON Buffer
 
 uint32_t dataUpdateDelay = (MINUTES_TO_MS * 1);
 
-////////////////////////////// Moon //////////////////////////////
-JsonDocument moonInfo; // Allocate the JSON document
+struct sensorData localSensor;
 struct moonData moon;
-
-////////////////////////////// Weather //////////////////////////////
-JsonDocument weatherInfo; // Allocate the JSON document
 struct weatherData currentWeather;
+JsonDocument moonInfo;    // Allocate the Moon JSON document
+JsonDocument weatherInfo; // Allocate the Weather JSON document
 
 /////////////////////////////////////////////////////////////////////////////
 
-void handleDataSources() {
+void setupDataSources()
+{
+  if (ht2x.begin() != true) // reset sensor, set heater off, set resolution, check power (sensor doesn't operate correctly if VDD < +2.25v)
+  {
+    Serial.println("-!- Local Sensor FAILURE -!-");
+  }
+  else
+  {
+    Serial.println("Local Sensor Connected");
+  }
+}
+
+void handleDataSources()
+{
 
   // if "it's time" and wifi is connected
 
@@ -33,19 +57,23 @@ void handleDataSources() {
   static uint32_t dataUpdateMillis = currentMillis;
   // static uint32_t dataUpdateDelay = (MINUTES_TO_MS * 1);
 
-  if ((uint32_t)(currentMillis - dataUpdateMillis) >= dataUpdateDelay) {
+  if ((uint32_t)(currentMillis - dataUpdateMillis) >= dataUpdateDelay)
+  {
 
     Serial.println();
-    Serial.print("--- Data Update Timeout at ");
+    Serial.print("-!- Remote Data Update Timeout at ");
     serialClockDisplay();
 
-    if (WiFi.status() == WL_CONNECTED) {
+    if (WiFi.status() == WL_CONNECTED)
+    {
       updateMoonData();
       updateWeatherData();
       dataUpdateDelay = DATA_UPDATE_INTERVAL;
-    } else {
+    }
+    else
+    {
       Serial.println("No network");
-      dataUpdateDelay = (MINUTES_TO_MS * 5);
+      dataUpdateDelay = DATA_RETRY_INTERVAL;
     }
     /*
       else {
@@ -55,8 +83,10 @@ void handleDataSources() {
     */
     dataUpdateMillis = currentMillis;
   }
-}
 
+  updateLocalSensorData();
+}
+/*
 void updateDataSources() {
   uint32_t savedMillis = millis();
   updateMoonData();
@@ -68,11 +98,55 @@ void updateDataSources() {
   Serial.print("Weather fetch delta: ");
   Serial.println(millis() - savedMillis);
 }
+*/
 
-////////////////////////////// Moon //////////////////////////////
-void updateMoonData() {
+void updateLocalSensorData()
+{
+  uint32_t currentMillis = millis();
+  static uint32_t previousMillis = 0;
 
-  //updateMoonDisplay(29);
+  if ((uint32_t)(currentMillis - previousMillis) >= 15000)
+  {
+
+    Serial.println("----------- Sensor Data -----------");
+
+    float htValue = ht2x.readTemperature();
+
+    if (htValue != HTU2XD_SHT2X_SI70XX_ERROR) // HTU2XD_SHT2X_SI70XX_ERROR = 255
+    {
+      // We already have the temperature in 'htValue'
+      localSensor.temperature = htValue;
+
+      htValue = ht2x.getCompensatedHumidity(htValue);
+      localSensor.humidity = uint8_t(htValue + 0.5f); // Round up
+
+      localSensor.fetchSuccess = 0;
+    }
+    else
+    {
+      localSensor.fetchSuccess = FETCH_FAIL;
+    }
+
+    if (localSensor.fetchSuccess == 0)
+    {
+      Serial.print("Temperature...: ");
+      Serial.print(localSensor.temperature + 0.05f, 1);
+      Serial.println("°C +-0.3°");
+      Serial.print("Humidity......: ");
+      Serial.print(localSensor.humidity);
+      Serial.println("% +-2%");
+    }
+    Serial.println();
+    
+    previousMillis = currentMillis;
+  }
+}
+
+//////////////////////////////// Moon ///////////////////////////////
+void updateMoonData()
+{
+
+  // updateMoonDisplay(29);
 
   client.setInsecure();
 
@@ -92,8 +166,8 @@ void updateMoonData() {
 
   String fetchedJSON = http.getString();
 
-   Serial.print("Moon JSON: ");
-   Serial.println(fetchedJSON);
+  // Serial.print("Moon JSON: ");
+  // Serial.println(fetchedJSON);
 
   fetchedJSON = fetchedJSON.substring(1, fetchedJSON.length() - 1);
 
@@ -106,7 +180,8 @@ void updateMoonData() {
   Serial.println();
   Serial.println("----------- Moon Data -----------");
 
-  if (!moon.fetchSuccess) {
+  if (!moon.fetchSuccess)
+  {
 
     strcpy(moon.name, moonInfo["Moon"][0]);
     strcpy(moon.phase, moonInfo["Phase"]);
@@ -128,14 +203,16 @@ void updateMoonData() {
 
     updateMoonDisplay(moon.index);
   } //
-  else {
+  else
+  {
     Serial.print("Moon data fetch error: ");
     Serial.println(moon.fetchSuccess);
   }
 }
 
 ////////////////////////////// Weather //////////////////////////////
-void updateWeatherData() {
+void updateWeatherData()
+{
 
   snprintf(fetchURL, BUF_SIZE,
            URL_BASE_WEATHER "latitude=%.8f&longitude=%.2f&%s%s", LAT, LONG,
@@ -170,9 +247,10 @@ void updateWeatherData() {
   Serial.println();
   Serial.println("----------- Weather Data -----------");
 
-  if (currentWeather.fetchSuccess == FETCH_OK) {
+  if (currentWeather.fetchSuccess == FETCH_OK)
+  {
 
-    currentWeather.temp = weatherInfo["current"]["temperature_2m"];
+    currentWeather.temperature = weatherInfo["current"]["temperature_2m"];
     currentWeather.feels = weatherInfo["current"]["apparent_temperature"];
     currentWeather.precipitation = weatherInfo["current"]["precipitation"];
     currentWeather.cloudCover = weatherInfo["current"]["cloud_cover"];
@@ -187,7 +265,7 @@ void updateWeatherData() {
     Serial.println();
 
     Serial.print("Current Temperature: ");
-    Serial.print(currentWeather.temp);
+    Serial.print(currentWeather.temperature);
     Serial.println("°C");
 
     Serial.print("Apparent Temperature: ");
@@ -222,7 +300,8 @@ void updateWeatherData() {
     updateCurrentWeatherDisplay();
 
   } //
-  else {
+  else
+  {
     Serial.println("Weather fetch error: ");
     Serial.println(currentWeather.fetchSuccess);
   }
