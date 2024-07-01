@@ -92,8 +92,8 @@ void updateMoonData() {
 
   String fetchedJSON = http.getString();
 
-  // Serial.print("Moon JSON: ");
-  // Serial.println(fetchedJSON);
+   Serial.print("Moon JSON: ");
+   Serial.println(fetchedJSON);
 
   fetchedJSON = fetchedJSON.substring(1, fetchedJSON.length() - 1);
 
