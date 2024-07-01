@@ -64,15 +64,15 @@
 #define COLON_X_OFFSET 150
 #define COLON_Y_OFFSET (VP_TIME_Y + 80)
 #define TOP_LINE_Y (VP_TIME_Y - 10)
-#define BTM_LINE_Y (VP_TIME_Y + 122)
+#define BTM_LINE_Y (VP_TIME_Y + 115)
 
 // Viewports
 #define VP_TIME_X 0
-#define VP_TIME_Y 75
+#define VP_TIME_Y 85
 #define VP_TIME_W 75
 #define VP_TIME_H 110
 
-#define VP_DATE_Y (BTM_LINE_Y + 15)
+#define VP_DATE_Y (BTM_LINE_Y + 10)
 #define VP_DATE_W 320
 #define VP_DATE_H 60
 
