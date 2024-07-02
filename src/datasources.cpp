@@ -13,12 +13,14 @@
 #include "display.h"
 #include "network.h"
 #include <HTU2xD_SHT2x_Si70xx.h>
+#include <PubSubClient.h>
 
 HTU2xD_SHT2x_SI70xx ht2x(HTU2xD_SENSOR, HUMD_11BIT_TEMP_11BIT); // sensor type, resolution
 
-WiFiClientSecure client;
-HTTPClient http;
-
+WiFiClientSecure wifiClientSecure;
+HTTPClient httpClient;
+WiFiClient wifiClient;
+PubSubClient client(wifiClient);
 // uint32_t unixTime = 1904249932; // Debug
 
 void handleDataSources();
@@ -137,7 +139,7 @@ void updateLocalSensorData()
       Serial.println("% +-2%");
     }
     Serial.println();
-    
+
     previousMillis = currentMillis;
   }
 }
@@ -148,7 +150,7 @@ void updateMoonData()
 
   // updateMoonDisplay(29);
 
-  client.setInsecure();
+  wifiClientSecure.setInsecure();
 
   snprintf(fetchURL, BUF_SIZE, URL_BASE_MOON "%u", now());
 
@@ -161,10 +163,10 @@ void updateMoonData()
   // Serial.print("URL: ");
   // Serial.println(fetchURL);
 
-  http.begin(client, fetchURL);
-  http.GET();
+  httpClient.begin(wifiClientSecure, fetchURL);
+  httpClient.GET();
 
-  String fetchedJSON = http.getString();
+  String fetchedJSON = httpClient.getString();
 
   // Serial.print("Moon JSON: ");
   // Serial.println(fetchedJSON);
@@ -173,7 +175,7 @@ void updateMoonData()
 
   deserializeJson(moonInfo, fetchedJSON); // Parse response
 
-  http.end();
+  httpClient.end();
 
   moon.fetchSuccess = moonInfo["Error"]; // 0 = no errors
 
@@ -228,19 +230,19 @@ void updateWeatherData()
   // Serial.print("URL: ");
   // Serial.println(fetchURL);
 
-  client.setInsecure();
+  wifiClientSecure.setInsecure();
 
-  http.begin(client, fetchURL);
-  http.GET();
+  httpClient.begin(wifiClientSecure, fetchURL);
+  httpClient.GET();
 
-  String fetchedJSON = http.getString();
+  String fetchedJSON = httpClient.getString();
 
   // Serial.print("JSON: ");
   // Serial.println(fetchedJSON);
 
   deserializeJson(weatherInfo, fetchedJSON); // Parse response
 
-  http.end();
+  httpClient.end();
 
   currentWeather.fetchSuccess = weatherInfo["error"]; // 0 = no errors
 
