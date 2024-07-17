@@ -1,9 +1,7 @@
-#include "datasources.h"
 #include "defines.h"
 #include "display.h"
-#include "network.h"
-
-
+#include "network/network.h"
+#include "sensor.h"
 
 void i2cScan();
 
@@ -13,6 +11,7 @@ void setup()
   pinMode(LED_DEBUG, OUTPUT);
 
   Wire.begin(PIN_SDA, PIN_SCL);
+
   Serial.begin(115200);
   delay(1000);
   Serial.println("\nHellord");
@@ -24,26 +23,19 @@ void setup()
   */
 
   setupTime();
+  setupNetwork();
   setupDisplay();
-  setupDataSources();
-
-#ifndef NO_NET
-  setupWiFi();
-#endif
+  setupLocalSensor();
+  
 }
 
 void loop()
 {
 
-#ifndef NO_NET
-  handleWiFi();
-  handleNTP();
-  handleDataSources();
-#endif
-
+  handleNetwork();
   handleDisplay();
+  handleLocalSensor();
 
-  // blink();
   handleSerial();
 }
 

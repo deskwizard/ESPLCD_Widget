@@ -225,12 +225,12 @@ void drawStatic() {
 
   tft.drawFastHLine(0, TOP_LINE_Y, DISP_W, H_LINE_COLOR);
   tft.drawFastHLine(0, TOP_LINE_Y - 1, DISP_W, H_LINE_COLOR);
-  //tft.drawFastHLine(0, TOP_LINE_Y - 2, DISP_W, H_LINE_COLOR);
+  tft.drawFastHLine(0, TOP_LINE_Y - 2, DISP_W, H_LINE_COLOR);
 
 
   tft.drawFastHLine(0, BTM_LINE_Y, DISP_W, H_LINE_COLOR);
   tft.drawFastHLine(0, BTM_LINE_Y + 1, DISP_W, H_LINE_COLOR);
- // tft.drawFastHLine(0, BTM_LINE_Y + 2, DISP_W, H_LINE_COLOR);
+  tft.drawFastHLine(0, BTM_LINE_Y + 2, DISP_W, H_LINE_COLOR);
 
 }
 
@@ -241,7 +241,7 @@ void updateCurrentWeatherDisplay() {
   // We have 2 viewports so set these beforehand
   tft.setTextColor(WEATHER_TEXT_COLOR, TFT_BLACK);
   tft.setTextDatum(TR_DATUM);
-  tft.setFreeFont(FONT_SMALL);
+  tft.setFreeFont(FONT_MED1);
 
   //  spriteTH.pushSprite(VP_WEA_W - 17, 4); /////////////////////////
 
@@ -252,10 +252,10 @@ void updateCurrentWeatherDisplay() {
     tft.fillScreen(TFT_BLACK);
     // tft.fillScreen(TFT_BLUE);
 
-    snprintf(buffer, 50, "%d C", roundFloat(currentWeather.temperature));
+    snprintf(buffer, 50, "%dc", roundFloat(currentWeather.temperature));
     tft.drawString(buffer, VP_WEA_W - 10, 7, GFXFF);
 
-    snprintf(buffer, 50, "%d C", roundFloat(currentWeather.feels));
+    snprintf(buffer, 50, "%dc", roundFloat(currentWeather.feels));
     tft.drawString(buffer, VP_WEA_W - 10, 32, GFXFF);
     tft.resetViewport();
     
@@ -271,9 +271,9 @@ void updateCurrentWeatherDisplay() {
   tft.setTextDatum(TL_DATUM);
 }
 
-void updateWeatherIcon(bool tiny) {
+void updateWeatherIcon(bool animated) {
 
-  if (tiny) {
+  if (animated) {
     snprintf(imageFilename, 80, "/weather/small/anim/img.png");
     // Adjust location of the weather animation center image here
     // It needs adjustment when the image size changes (duh...).
@@ -291,8 +291,8 @@ void updateWeatherIcon(bool tiny) {
 
   tft.setViewport(VP_WEA_ICON_X, VP_WEA_ICON_Y, VP_WEA_ICON_W, VP_WEA_ICON_H);
 
-  tft.fillScreen(TFT_BLACK);
-  // tft.fillScreen(TFT_PURPLE);
+  //tft.fillScreen(TFT_BLACK);
+  tft.fillScreen(TFT_PURPLE);
 
   // return; //////////////////////////////////////////////////////////////
 

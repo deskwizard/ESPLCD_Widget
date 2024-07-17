@@ -2,7 +2,7 @@
 #define _DEFINES_H_
 
 //#define NO_NET
-#define NO_ANIM
+//#define NO_ANIM
 //#define TEST_DISPLAY
 
 #include <Arduino.h>
@@ -12,6 +12,8 @@
 
 #define PIN_SCL 26
 #define PIN_SDA 25
+
+#define FETCH_FAIL 42
 
 void blink();
 void handleSerial();

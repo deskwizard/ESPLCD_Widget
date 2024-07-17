@@ -11,101 +11,30 @@
 #include "datasources.h"
 #include "defines.h"
 #include "display.h"
-#include "network.h"
-#include <HTU2xD_SHT2x_Si70xx.h>
-#include <PubSubClient.h>
-
-HTU2xD_SHT2x_SI70xx ht2x(HTU2xD_SENSOR, HUMD_11BIT_TEMP_11BIT); // sensor type, resolution
+#include "network/network.h"
 
 WiFiClientSecure wifiClientSecure;
 HTTPClient httpClient;
-
-///////////////////////////////////////////////////////////////////////////////////////////////////////
-const char *mqtt_server = "192.168.2.22";
-uint16_t mqtt_port = 1883;
-
-// Publishing
-const char *deviceIDBase = "BME280-";
-char deviceID[13] = ""; // Filled later with MAC
-char mqttTopic[] = "bedroom/sensor";
-uint16_t publishInterval = 15000;
-WiFiClient wifiClient;
-PubSubClient client(wifiClient);
-void callback(char *topic, byte *payload, unsigned int length) {};
-void publish();
-///////////////////////////////////////////////////////////////////////////////////////////////////////
-
-// uint32_t unixTime = 1904249932; // Debug
 
 void handleDataSources();
 void updateDataSources();
 
 char fetchURL[BUF_SIZE]; // JSON Buffer
 
-uint32_t dataUpdateDelay = (MINUTES_TO_MS * 1);
+// uint32_t dataUpdateDelay = (MINUTES_TO_MS * 1);
+uint32_t dataUpdateDelay = ANIMATION_START_DELAY; // Wait so it animates a bit
 
-struct sensorData localSensor;
+//struct sensorData localSensor;
 struct moonData moon;
 struct weatherData currentWeather;
 JsonDocument moonInfo;    // Allocate the Moon JSON document
 JsonDocument weatherInfo; // Allocate the Weather JSON document
 
-/////////////////////////////////////////////////////////////////////////////
-
-void connect()
-{
-  // Loop until we're reconnected
-  while (!client.connected())
-  {
-    Serial.print("Attempting MQTT connection...");
-
-    // Attempt to connect...
-    if (client.connect(deviceID))
-    {
-      Serial.println("connected");
-
-      // client.publish(mqttTopicT, "hello world");
-
-      // ... and resubscribe
-      // client.subscribe(inTopic);
-    }
-    else
-    {
-      Serial.print("failed, rc=");
-      Serial.print(client.state());
-      Serial.println(" try again in 5 seconds");
-      // Wait 5 seconds before retrying
-      delay(5000);
-    }
-  }
-}
-
-void setupDataSources()
-{
-  if (ht2x.begin() != true) // reset sensor, set heater off, set resolution, check power (sensor doesn't operate correctly if VDD < +2.25v)
-  {
-    Serial.println("-!- Local Sensor FAILURE -!-");
-  }
-  else
-  {
-    Serial.println("Local Sensor Connected");
-  }
-
-  client.setServer(mqtt_server, mqtt_port);
-  client.setCallback(callback);
-}
 
 void handleDataSources()
 {
 
-  if (!client.connected() && WiFi.status() == WL_CONNECTED)
-  {
-    connect();
-  }
-  client.loop();
-
   // if "it's time" and wifi is connected
-
   uint32_t currentMillis = millis();
   static uint32_t dataUpdateMillis = currentMillis;
   // static uint32_t dataUpdateDelay = (MINUTES_TO_MS * 1);
@@ -121,6 +50,7 @@ void handleDataSources()
     {
       updateMoonData();
       updateWeatherData();
+
       dataUpdateDelay = DATA_UPDATE_INTERVAL;
     }
     else
@@ -137,7 +67,6 @@ void handleDataSources()
     dataUpdateMillis = currentMillis;
   }
 
-  updateLocalSensorData();
 }
 /*
 void updateDataSources() {
@@ -153,67 +82,6 @@ void updateDataSources() {
 }
 */
 
-void updateLocalSensorData()
-{
-  uint32_t currentMillis = millis();
-  static uint32_t previousMillis = 0;
-
-  if ((uint32_t)(currentMillis - previousMillis) >= 15000)
-  {
-
-    Serial.println("----------- Sensor Data -----------");
-
-    float htValue = ht2x.readTemperature();
-
-    if (htValue != HTU2XD_SHT2X_SI70XX_ERROR) // HTU2XD_SHT2X_SI70XX_ERROR = 255
-    {
-      // We already have the temperature in 'htValue'
-      localSensor.temperature = htValue;
-
-      htValue = ht2x.getCompensatedHumidity(htValue);
-      localSensor.humidity = uint8_t(htValue + 0.5f); // Round up
-
-      localSensor.fetchSuccess = 0;
-
-      publish();
-    }
-    else
-    {
-      localSensor.fetchSuccess = FETCH_FAIL;
-    }
-
-    if (localSensor.fetchSuccess == 0)
-    {
-      Serial.print("Temperature...: ");
-      Serial.print(localSensor.temperature + 0.05f, 1);
-      Serial.println("°C +-0.3°");
-      Serial.print("Humidity......: ");
-      Serial.print(localSensor.humidity);
-      Serial.println("% +-2%");
-    }
-    Serial.println();
-
-    previousMillis = currentMillis;
-  }
-}
-
-void publish()
-{
-  char publishMessage[75];
-
-
-  //    Serial.print("T: ");
-  //    Serial.print(temperature);
-  //    Serial.print(" H: ");
-  //    Serial.print(humidity);
-  snprintf(publishMessage, 75, "{\"temperature\": %.1f, \"humidity\": %d}", localSensor.temperature + 0.05f, localSensor.humidity);
-
-  Serial.print("Publish message: ");
-  Serial.println(publishMessage);
-
-  client.publish(mqttTopic, publishMessage,
-                 false); // true = persistant, will keep last msg
-}
 
 //////////////////////////////// Moon ///////////////////////////////
 void updateMoonData()
@@ -288,7 +156,7 @@ void updateWeatherData()
 {
 
   snprintf(fetchURL, BUF_SIZE,
-           URL_BASE_WEATHER "latitude=%.8f&longitude=%.2f&%s%s", LAT, LONG,
+           URL_BASE_WEATHER "latitude=%.8f&longitude=%.2f&%s%s", WEATHER_LAT, WEATHER_LONG,
            "current=",
            "temperature_2m,relative_humidity_2m,apparent_temperature,"
            "precipitation,wind_speed_10m,wind_direction_10m,cloud_cover,"

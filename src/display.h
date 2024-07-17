@@ -91,10 +91,10 @@
 
 #define VP_WEA_ICON_X (VP_WEA_X1 + VP_WEA_W)
 #define VP_WEA_ICON_Y 0
-#define VP_WEA_ICON_H 50
+#define VP_WEA_ICON_H 40
 #define VP_WEA_ICON_W 60
 #define WEA_ICON_X 0
-#define WEA_ICON_Y 10
+#define WEA_ICON_Y 0
 
 // The custom fonts file attached to this sketch must be included
 #define GFXFF 1 // Stock font and GFXFF reference handle
@@ -110,7 +110,7 @@ void animate();
 void handleBacklight();
 void drawStatic();
 void updateCurrentWeatherDisplay();
-void updateWeatherIcon(bool tiny = false);
+void updateWeatherIcon(bool animated = false);
 void animateWeather();
 void updateMoonDisplay(uint8_t index);
 void updateMoonWarningDisplay();

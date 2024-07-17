@@ -15,8 +15,7 @@
 ////////////////////////////// Weather //////////////////////////////
 #define URL_BASE_WEATHER                                                       \
   "https://api.open-meteo.com/v1/forecast?timeformat=unixtime&"
-#define LAT 45.70
-#define LONG -71.47
+
 
 struct weatherData {
   uint8_t weatherCode;
@@ -46,22 +45,10 @@ struct moonData {
 };
 extern struct moonData moon;
 
-//////////////////////////// Sensors /////////////////////////////
-struct sensorData {
-  float temperature;
-  float pressure;
-  uint8_t humidity;
-  uint8_t fetchSuccess = FETCH_FAIL; // 0 = no errors
-};
-
-extern struct sensorData localSensor;
-
-//////////////////////////////////////////////////////////////////
 void setupDataSources();
 void handleDataSources();
 
 void updateWeatherData();
 void updateMoonData();
-void updateLocalSensorData();
 
 #endif
