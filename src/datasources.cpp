@@ -19,8 +19,22 @@ HTU2xD_SHT2x_SI70xx ht2x(HTU2xD_SENSOR, HUMD_11BIT_TEMP_11BIT); // sensor type, 
 
 WiFiClientSecure wifiClientSecure;
 HTTPClient httpClient;
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////
+const char *mqtt_server = "192.168.2.22";
+uint16_t mqtt_port = 1883;
+
+// Publishing
+const char *deviceIDBase = "BME280-";
+char deviceID[13] = ""; // Filled later with MAC
+char mqttTopic[] = "bedroom/sensor";
+uint16_t publishInterval = 15000;
 WiFiClient wifiClient;
 PubSubClient client(wifiClient);
+void callback(char *topic, byte *payload, unsigned int length) {};
+void publish();
+///////////////////////////////////////////////////////////////////////////////////////////////////////
+
 // uint32_t unixTime = 1904249932; // Debug
 
 void handleDataSources();
@@ -38,6 +52,34 @@ JsonDocument weatherInfo; // Allocate the Weather JSON document
 
 /////////////////////////////////////////////////////////////////////////////
 
+void connect()
+{
+  // Loop until we're reconnected
+  while (!client.connected())
+  {
+    Serial.print("Attempting MQTT connection...");
+
+    // Attempt to connect...
+    if (client.connect(deviceID))
+    {
+      Serial.println("connected");
+
+      // client.publish(mqttTopicT, "hello world");
+
+      // ... and resubscribe
+      // client.subscribe(inTopic);
+    }
+    else
+    {
+      Serial.print("failed, rc=");
+      Serial.print(client.state());
+      Serial.println(" try again in 5 seconds");
+      // Wait 5 seconds before retrying
+      delay(5000);
+    }
+  }
+}
+
 void setupDataSources()
 {
   if (ht2x.begin() != true) // reset sensor, set heater off, set resolution, check power (sensor doesn't operate correctly if VDD < +2.25v)
@@ -48,10 +90,19 @@ void setupDataSources()
   {
     Serial.println("Local Sensor Connected");
   }
+
+  client.setServer(mqtt_server, mqtt_port);
+  client.setCallback(callback);
 }
 
 void handleDataSources()
 {
+
+  if (!client.connected() && WiFi.status() == WL_CONNECTED)
+  {
+    connect();
+  }
+  client.loop();
 
   // if "it's time" and wifi is connected
 
@@ -123,6 +174,8 @@ void updateLocalSensorData()
       localSensor.humidity = uint8_t(htValue + 0.5f); // Round up
 
       localSensor.fetchSuccess = 0;
+
+      publish();
     }
     else
     {
@@ -142,6 +195,24 @@ void updateLocalSensorData()
 
     previousMillis = currentMillis;
   }
+}
+
+void publish()
+{
+  char publishMessage[75];
+
+
+  //    Serial.print("T: ");
+  //    Serial.print(temperature);
+  //    Serial.print(" H: ");
+  //    Serial.print(humidity);
+  snprintf(publishMessage, 75, "{\"temperature\": %.1f, \"humidity\": %d}", localSensor.temperature + 0.05f, localSensor.humidity);
+
+  Serial.print("Publish message: ");
+  Serial.println(publishMessage);
+
+  client.publish(mqttTopic, publishMessage,
+                 false); // true = persistant, will keep last msg
 }
 
 //////////////////////////////// Moon ///////////////////////////////
