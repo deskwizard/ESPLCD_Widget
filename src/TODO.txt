@@ -1,12 +1,10 @@
 - Current Weather
-    ! Fetch 
+    * Fetch 
     - Icons
 
 - Moon
     * Fetch
     / Icons
-
-- Local sensor
 
 - Touch zones
     - Extra Info Moon

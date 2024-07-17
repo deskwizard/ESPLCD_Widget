@@ -1,9 +1,10 @@
 #ifndef _NTP_H_
 #define _NTP_H_
 
-#include <ESPmDNS.h>
+#include "network.h"
 #include <WiFi.h>
 #include <WiFiUdp.h>
+#include <ESPmDNS.h>
 
 // Choose one of these
 // #define NTP_LOCAL_DISC

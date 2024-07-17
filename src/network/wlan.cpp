@@ -1,5 +1,4 @@
-#include "network.h"
-#include "defines.h"
+#include "wlan.h"
 
 extern const char ssid[];
 extern const char password[];

@@ -1,16 +1,15 @@
 #ifndef _DATASOURCES_H_
 #define _DATASOURCES_H_
 
+#include "defines.h"
 #include <ArduinoJson.h>
 #include <HTTPClient.h>
 #include <WiFiClientSecure.h>
 
 #define BUF_SIZE 400 // Buffer size
-#define FETCH_OK 0
 #define DATA_UPDATE_INTERVAL (MINUTES_TO_MS * 15)
 #define DATA_RETRY_INTERVAL (MINUTES_TO_MS * 5)
 
-#define FETCH_FAIL 42
 
 ////////////////////////////// Weather //////////////////////////////
 #define URL_BASE_WEATHER                                                       \

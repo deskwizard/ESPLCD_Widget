@@ -1,4 +1,3 @@
-#include "network.h"
 #include "ntp.h"
 
 WiFiUDP Udp;
@@ -136,9 +135,9 @@ void getNtpTime() {
       Serial.println("--- NTP  --- ");
       Serial.println("Received NTP Response, Setting Time.");
 
-      Udp.read(packetBuffer, NTP_PACKET_SIZE); // read packet into the buffer
+      Udp.read(packetBuffer, NTP_PACKET_SIZE); // Read packet into the buffer
       uint32_t secsSince1900;
-      // convert four bytes starting at location 40 to a long integer
+      // Convert four bytes starting at location 40 to a uint32_t
       secsSince1900 = (uint32_t)packetBuffer[40] << 24;
       secsSince1900 |= (uint32_t)packetBuffer[41] << 16;
       secsSince1900 |= (uint32_t)packetBuffer[42] << 8;

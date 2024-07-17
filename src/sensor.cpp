@@ -1,6 +1,7 @@
 #include "defines.h"
 #include "sensor.h"
 #include "network/mqtt.h"
+
 #include <HTU2xD_SHT2x_Si70xx.h>
 HTU2xD_SHT2x_SI70xx ht2x(HTU2xD_SENSOR, HUMD_11BIT_TEMP_11BIT); // sensor type, resolution
 struct sensorData localSensor;
@@ -40,7 +41,7 @@ void handleLocalSensor()
             htValue = ht2x.getCompensatedHumidity(htValue);
             localSensor.humidity = uint8_t(htValue + 0.5f); // Round up
 
-            localSensor.fetchSuccess = 0;
+            localSensor.fetchSuccess = FETCH_OK;
 
             publishMQTT();
         }
@@ -49,7 +50,7 @@ void handleLocalSensor()
             localSensor.fetchSuccess = FETCH_FAIL;
         }
 
-        if (localSensor.fetchSuccess == 0)
+        if (localSensor.fetchSuccess == FETCH_OK)
         {
             Serial.print("Temperature...: ");
             Serial.print(localSensor.temperature + 0.05f, 1);

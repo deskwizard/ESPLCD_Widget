@@ -1,15 +1,4 @@
-
-/*
-
-     Remote = MQTT local
-     Local = onboard
-     External = internet stuff
-
-     Fetch internet stuff on SBC instead ??
-
-*/
 #include "datasources.h"
-#include "defines.h"
 #include "display.h"
 #include "network/network.h"
 
@@ -24,7 +13,6 @@ char fetchURL[BUF_SIZE]; // JSON Buffer
 // uint32_t dataUpdateDelay = (MINUTES_TO_MS * 1);
 uint32_t dataUpdateDelay = ANIMATION_START_DELAY; // Wait so it animates a bit
 
-//struct sensorData localSensor;
 struct moonData moon;
 struct weatherData currentWeather;
 JsonDocument moonInfo;    // Allocate the Moon JSON document
