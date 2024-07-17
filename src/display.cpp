@@ -6,12 +6,13 @@
 
 /******** WARNING: INCLUDE ORDER MATTERS !!! ********/
 #include "display.h"
-#include "datasources.h"
+#include "network/network.h"
 #include "defines.h"
 
 char imageFilename[80];
 File pngfile;
 PNG png;
+
 // Image coordinates used by pngDrawImage when drawing
 int16_t pngPosX = 0;
 int16_t pngPosY = 0;
@@ -22,9 +23,6 @@ TFT_eSprite spriteTH = TFT_eSprite(&tft);
 extern time_t localTime;
 extern Timezone myTZ;
 char dateString[60];
-
-#define beat_delay 400 // Debug
-bool djph = false;     // Debug
 
 uint16_t animXPos = ANIM_ORIGIN_X;
 uint16_t animYPos = ANIM_ORIGIN_Y;

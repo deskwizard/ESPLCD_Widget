@@ -1,4 +1,3 @@
-#include "defines.h"
 #include "sensor.h"
 #include "network/mqtt.h"
 

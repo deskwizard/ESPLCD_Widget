@@ -2,6 +2,7 @@
 #define _DATASOURCES_H_
 
 #include "defines.h"
+#include "network/network.h"
 #include <ArduinoJson.h>
 #include <HTTPClient.h>
 #include <WiFiClientSecure.h>

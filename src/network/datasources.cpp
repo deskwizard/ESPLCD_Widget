@@ -1,6 +1,5 @@
 #include "datasources.h"
 #include "display.h"
-#include "network/network.h"
 
 WiFiClientSecure wifiClientSecure;
 HTTPClient httpClient;
@@ -11,21 +10,19 @@ void updateDataSources();
 char fetchURL[BUF_SIZE]; // JSON Buffer
 
 // uint32_t dataUpdateDelay = (MINUTES_TO_MS * 1);
-uint32_t dataUpdateDelay = ANIMATION_START_DELAY; // Wait so it animates a bit
+uint32_t dataUpdateDelay = ANIMATION_START_DELAY; // Wait so it animates a bit :)
 
 struct moonData moon;
 struct weatherData currentWeather;
-JsonDocument moonInfo;    // Allocate the Moon JSON document
-JsonDocument weatherInfo; // Allocate the Weather JSON document
+JsonDocument moonInfo;
+JsonDocument weatherInfo;
 
 
 void handleDataSources()
 {
 
-  // if "it's time" and wifi is connected
   uint32_t currentMillis = millis();
   static uint32_t dataUpdateMillis = currentMillis;
-  // static uint32_t dataUpdateDelay = (MINUTES_TO_MS * 1);
 
   if ((uint32_t)(currentMillis - dataUpdateMillis) >= dataUpdateDelay)
   {
@@ -56,6 +53,7 @@ void handleDataSources()
   }
 
 }
+
 /*
 void updateDataSources() {
   uint32_t savedMillis = millis();
